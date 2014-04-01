@@ -9,10 +9,12 @@ require.config({
       exports: '_'
     }
   },
+
   paths: {
     underscore: 'libs/underscore',
     backbone: 'libs/backbone',
-    jquery: 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min'
+    jquery: 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
+    text: 'libs/text'
   },
 });
 
