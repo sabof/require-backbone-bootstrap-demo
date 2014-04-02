@@ -7,7 +7,38 @@ define(function(require) {
 
   var ItemTemplate = require('text!../templates/title-item.html');
 
-  var TitleModel = Backbone.Model.extend({
+  var BaseModel = Backbone.Model.extend({
+    constructor: function(attrs, opts) {
+      if (opts && opts.appModel) {
+        this.appModel = opts.appModel;
+        delete attrs.appModel;
+      }
+
+      Backbone.Model.apply(this, arguments);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+
+  var BaseCollection = Backbone.Collection.extend({
+    constructor: function(attrs, opts) {
+      if (opts && opts.appModel) {
+        console.log('C appModel');
+        this.appModel = opts.appModel;
+        delete attrs.appModel;
+      }
+
+      Backbone.Collection.apply(this, arguments);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+
+  var TitleModel = BaseModel.extend({
+    url: function() {
+      // return this.appModel.currentUser.url();
+    },
+
     defaults: function() {
       return {
 	      description: null,
@@ -25,15 +56,22 @@ define(function(require) {
     }
   });
 
-  var AvailableTitlesModel = Backbone.Collection.extend({
-    url: 'http://217.18.25.29:10070/gametitles/list',
+  // ---------------------------------------------------------------------------
 
-    // model: TitleModel,
+  var AvailableTitlesCollection = BaseCollection.extend({
+    url: function() {
+      return this.appModel.url() + 'gametitles/list';
+    },
+
     model: function(attrs, options) {
-      // No-op
-      attrs.appModel = this.appModel;
-      // debugger;
-      return new TitleModel(attrs, options);
+      var title = new TitleModel(attrs, options);
+      title.appModel = options.collection.appModel;
+
+      return title;
+    },
+
+    initialize: function() {
+      // this.model = this.model.bind(this);
     },
 
     parse: function(response, options) {
@@ -41,7 +79,34 @@ define(function(require) {
     }
   });
 
-  var UserModel = Backbone.Model.extend({
+  // ---------------------------------------------------------------------------
+
+  var UserModel = BaseModel.extend({
+    url: function() {
+      // 'register' or 'sign-in'
+      // if (this.appModel.sessionId
+      return this.appModel.url() + this.get('username');
+    },
+
+    register: function(attrs) {
+      return this.save(
+        attrs, {
+          url: this.appModel.url() + 'register/' + attrs.username,
+          forceMethod: 'update'
+        });
+    },
+
+    validate: function(attrs) {
+      if ( ! (attrs.username &&
+              attrs.firstName &&
+              attrs.lastName &&
+              attrs.password &&
+              attrs.phoneNumber)
+         ) {
+        return 'something is invalid';
+      }
+    },
+
     defaults: function() {
       return {
 	      firstName: null,
@@ -57,22 +122,34 @@ define(function(require) {
     },
 
     sync: function(method, model, options) {
+      if (options.forceMethod) {
+        method = options.forceMethod;
+      }
       return Backbone.sync(method, model, options);
     }
   });
 
-  var AppModel = Backbone.Model.extend({
-    defaults: function() {
-      return {
-        currentUser: null,
-        currentSession: null,
-        pages: null,
-        currentPage: null
-      };
+  // ---------------------------------------------------------------------------
+
+  var AppModel = BaseModel.extend({
+    url: function() {
+      return 'http://217.18.25.29:10070/';
+    },
+
+    initialize: function() {
+      this.currentUser = new UserModel(false, {
+        appModel: this
+      });
+
+      this.currentSession = new SessionModel(false, {
+        appModel: this
+      });
     }
   });
 
-  var SessionModel = Backbone.Model.extend({
+  // ---------------------------------------------------------------------------
+
+  var SessionModel = BaseModel.extend({
     defaults: function() {
       return {
         sessionId: null,
@@ -101,9 +178,6 @@ define(function(require) {
         self.remove();
       });
 
-      // this.model.on("all", function(eventName){
-      //   console.log(eventName + ' was triggered!');
-      // });
     },
 
     events:{
@@ -119,16 +193,22 @@ define(function(require) {
     }
   });
 
-  var UserTitlesCollection = Backbone.Collection.extend({
+  // ---------------------------------------------------------------------------
+
+  var UserTitlesCollection = BaseCollection.extend({
     url: function() {
       var root = this.appModel.currentUser.url();
       return root + '/titles';
     }
   });
 
+  // ---------------------------------------------------------------------------
+
   var UserTitlesView = Backbone.View.extend({
 
   });
+
+  // ---------------------------------------------------------------------------
 
   var AvailableTitlesView = Backbone.View.extend({
     tagName: 'table',
@@ -170,6 +250,8 @@ define(function(require) {
 
   });
 
+  // ---------------------------------------------------------------------------
+
   var SignInPage = Backbone.View.extend({
     userModel: null,
 
@@ -184,24 +266,62 @@ define(function(require) {
 
   // $('#main-content').html(item.render().el);
 
+  // Model per page?
+  // Is there something special about the 'model' property?
+
+  // ---------------------------------------------------------------------------
+
+  var RegisterPage = Backbone.View.extend({
+    initialize: function() {
+
+    },
+
+    events: {
+      'click .submit' : 'submitOnClick'
+    },
+
+    submitOnClick: function(e) {
+      e.preventDefault();
+
+      // FIXME: Wrap in a model method
+
+      this.model.register({
+        firstName: $('#register-first-name').val(),
+        lastName: $('#register-last-name').val(),
+        password: $('#register-password').val(),
+        phoneNumber: $('#register-phone-number').val()
+      });
+
+      return false;
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+
   var appModel = new AppModel();
 
+  var availableModel = window.availableModel = new AvailableTitlesCollection(false, {
+    appModel: appModel
+  });
+
   var list = window.list = new AvailableTitlesView({
-    model: new AvailableTitlesModel({
-      appModel: appModel
-    })
+    model: availableModel
   });
 
   $('#pages #view-titles').html(list.render().el);
   list.model.fetch();
 
-  // Model per page?
-  // Is there something special about the 'model' property?
 
-  // var signInPage = new SignInPage({
-  //   $el: $('#pages .sign-in'),
-  //   userModel: new UserModel()
-  // });
+  var registerPage = new RegisterPage({
+    el: '#pages #register',
+    model: appModel.currentUser
+  });
+
+  var signInPage = new SignInPage({
+    // FIXME: change id to page-sign-in
+    el: '#pages #sign-in',
+    model: appModel.currentSession
+  });
 
 });
 
