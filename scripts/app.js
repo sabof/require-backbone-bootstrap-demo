@@ -35,7 +35,7 @@ define(function(require) {
     }
   });
 
-  var User = Backbone.Model.extend({
+  var UserModel = Backbone.Model.extend({
     defaults: function() {
       return {
 	      firstName: null,
@@ -48,10 +48,14 @@ define(function(require) {
 	      genderIsFemale: false,
 	      notes: null,
 	    };
+    },
+
+    sync: function(method, model, options) {
+      return Backbone.sync(method, model, options);
     }
   });
 
-  var App = Backbone.Model.extend({
+  var AppModel = Backbone.Model.extend({
     defaults: function() {
       return {
         currentUser: null,
@@ -62,7 +66,7 @@ define(function(require) {
     }
   });
 
-  var Session = Backbone.Model.extend({
+  var SessionModel = Backbone.Model.extend({
     defaults: function() {
       return {
         sessionId: null,
@@ -109,6 +113,13 @@ define(function(require) {
     }
   });
 
+  var UserTitlesCollection = Backbone.Collection.extend({
+    url: function() {
+      var root = this.appModel.currentUser.url();
+      return root + '/titles';
+    }
+  });
+
   var UserTitlesView = Backbone.View.extend({
 
   });
@@ -151,22 +162,38 @@ define(function(require) {
 
   });
 
-  var SignInPage = Backbone.View.extend({});
+  var SignInPage = Backbone.View.extend({
+    userModel: null,
+
+    submitOnClick: function() {
+      this.userModel.save();
+    },
+
+    events: {
+      'click .submit' : 'submitOnClick'
+    }
+  });
 
   // $('#main-content').html(item.render().el);
 
-  var app = new App();
+  var appModel = new AppModel();
 
   var list = window.list = new AvailableTitlesView({
-    app: app,
-
     model: new AvailableTitlesModel({
-      app: app
+      appModel: appModel
     })
   });
 
-  $('#pages .sign-in').html(list.render().el);
+  $('#pages .view-titles').html(list.render().el);
   list.model.fetch();
+
+  // Model per page?
+  // Is there something special about the 'model' property?
+
+  // var signInPage = new SignInPage({
+  //   $el: $('#pages .sign-in'),
+  //   userModel: new UserModel()
+  // });
 
 });
 
@@ -191,7 +218,7 @@ define(function(require) {
 
 //     wineDetails:function (id) {
 //         this.wine = this.wineList.get(id);
-//         if (app.wineView) app.wineView.close();
+//         if (appModel.wineView) appModel.wineView.close();
 //         this.wineView = new WineView({model:this.wine});
 //         $('#content').html(this.wineView.render().el);
 //     }

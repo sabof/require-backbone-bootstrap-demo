@@ -3,29 +3,53 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title></title>
-    <link href="http://yui.yahooapis.com/3.10.1/build/cssreset/cssreset-min.css"
+    <link href="bootstrap/css/bootstrap.css"
           rel="stylesheet" type="text/css" />
-    <link href="" rel="stylesheet" type="text/css" />
-    <style type="text/css">
-
-    </style>
   </head>
   <body>
+    <div class="container">
 
-    <div id="main-content"></div>
-    <nav>
-      <ul>
-        <li class="sign-in">Sign In</li>
-        <li class="view-titles">View Titles</li>
-      </ul>
-    </nav>
+      <div id="main-content"></div>
 
-    <div id="pages">
-      <div class="sign-in"></div>
-      <div class="view-titles"></div>
+      <nav>
+        <ul class="nav nav-tabs">
+          <li class="sign-in">
+            <a href="#">Sign In</a>
+          </li>
+          <li class="view-titles">
+            <a href="#">View Titles</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div id="pages">
+
+        <div class="sign-in">
+          <form>
+            <div class="form-group">
+              <label class="control-label">
+                Username
+              </label>
+              <input name="username" class="form-control"/>
+            </div>
+            <div class="form-group">
+              <label class="control-label">
+                Password
+              </label>
+              <input name="password" class="form-control"/>
+            </div>
+            <input type="submit" value="Sign in"
+                   class="btn btn-default"/>
+          </form>
+        </div>
+
+        <div class="view-titles"></div>
+      </div>
+
+      <script data-main="scripts/require-main"
+              src="scripts/libs/require.js">
+      </script>
+      <script src="http://localhost:8080/skewer"></script>
     </div>
-
-    <script data-main="scripts/require-main" src="scripts/libs/require.js"></script>
-    <script src="http://localhost:8080/skewer"></script>
   </body>
 </html>
