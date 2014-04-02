@@ -28,7 +28,13 @@ define(function(require) {
   var AvailableTitlesModel = Backbone.Collection.extend({
     url: 'http://217.18.25.29:10070/gametitles/list',
 
-    model: TitleModel,
+    // model: TitleModel,
+    model: function(attrs, options) {
+      // No-op
+      attrs.appModel = this.appModel;
+      // debugger;
+      return new TitleModel(attrs, options);
+    },
 
     parse: function(response, options) {
       return response.titles;
@@ -79,7 +85,7 @@ define(function(require) {
   // VIEWS
 
   var TitleView = Backbone.View.extend({
-    tagName: 'li',
+    tagName: 'tr',
 
     template: _.template(ItemTemplate),
 
@@ -125,9 +131,11 @@ define(function(require) {
   });
 
   var AvailableTitlesView = Backbone.View.extend({
-    tagName: 'ul',
+    tagName: 'table',
 
     initialize: function () {
+      this.$el.addClass('table');
+
       // this.model.bind("reset", this.render, this);
       // var self = this;
       // this.model.bind("add", function (wine) {
@@ -184,7 +192,7 @@ define(function(require) {
     })
   });
 
-  $('#pages .view-titles').html(list.render().el);
+  $('#pages #view-titles').html(list.render().el);
   list.model.fetch();
 
   // Model per page?

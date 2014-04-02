@@ -13,18 +13,28 @@
 
       <nav>
         <ul class="nav nav-tabs">
-          <li class="sign-in">
-            <a href="#">Sign In</a>
+          <li class="sign-in" >
+            <a href="#sign-in" data-toggle="tab">Sign In</a>
           </li>
-          <li class="view-titles">
-            <a href="#">View Titles</a>
+
+          <li class="view-titles" >
+            <a href="#view-titles" data-toggle="tab">View Titles</a>
           </li>
+
+          <li class="register" >
+            <a href="#register" data-toggle="tab">Register</a>
+          </li>
+
+          <li class="account" >
+            <a href="#account" data-toggle="tab">View Account</a>
+          </li>
+
         </ul>
       </nav>
 
-      <div id="pages">
+      <div class="tab-content" id="pages">
 
-        <div class="sign-in">
+        <div class="tab-pane" id="sign-in">
           <form>
             <div class="form-group">
               <label class="control-label">
@@ -43,8 +53,15 @@
           </form>
         </div>
 
-        <div class="view-titles"></div>
+        <div class="tab-pane" id="view-titles">
+
+        </div>
       </div>
+
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">
+      </script>
+
+      <script src="bootstrap/js/bootstrap.js"></script>
 
       <script data-main="scripts/require-main"
               src="scripts/libs/require.js">
