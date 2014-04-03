@@ -97,13 +97,21 @@ define(function(require) {
     },
 
     validate: function(attrs) {
-      if ( ! (attrs.username &&
-              attrs.firstName &&
-              attrs.lastName &&
-              attrs.password &&
-              attrs.phoneNumber)
-         ) {
-        return 'something is invalid';
+      console.log('validate', attrs);
+      if ( ! attrs.username ) {
+        return 'Username is invalid';
+      }
+      if ( ! attrs.firstName ) {
+        return 'First name is invalid';
+      }
+      if ( ! attrs.lastName ) {
+        return 'Last name is invalid';
+      }
+      if ( ! attrs.password ) {
+        return 'Password is invalid';
+      }
+      if ( ! attrs.phoneNumber ) {
+        return 'Phone number is invalid';
       }
     },
 
@@ -150,6 +158,14 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var SessionModel = BaseModel.extend({
+    signIn: function(options) {
+      this.fetch({
+        url: this.appModel.url() +
+          'signin/' + options.username +
+          '/' + options.password
+      });
+    },
+
     defaults: function() {
       return {
         sessionId: null,
@@ -167,7 +183,6 @@ define(function(require) {
     template: _.template(ItemTemplate),
 
     deleteTitle: function(event) {
-      // console.log('deleted', this);
       this.model.destroy();
     },
 
@@ -180,7 +195,7 @@ define(function(require) {
 
     },
 
-    events:{
+    events: {
       "click .delete": "deleteTitle"
     },
 
@@ -253,10 +268,34 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var SignInPage = Backbone.View.extend({
-    userModel: null,
+    submitOnClick: function(e) {
+      e.preventDefault();
 
-    submitOnClick: function() {
-      this.userModel.save();
+      this.model.signIn({
+        username: $('#signin-username').val(),
+        password: $('#signin-password').val()
+      });
+      // var user = this.appModel.currentUser;
+      // this.model.fetch(false, {url: );
+    },
+
+    initialize: function() {
+      var self = this;
+
+      // FIXME: Move to base class?
+      this.model.on("error invalid", function(model, error) {
+        console.log('invalidEvent', model);
+        if (typeof error == 'object' && error.responseText) {
+          error = eval('(' + error.responseText + ')').msg;
+        }
+        self.$el.find('.error-message').html(error);
+      });
+
+      this.model.on("change", function() {
+        // FIXME: Set cookie
+        self.$el.find('.error-message').html('');
+      });
+
     },
 
     events: {
@@ -272,8 +311,28 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var RegisterPage = Backbone.View.extend({
-    initialize: function() {
+    // setErrorMessage: function(message) {
 
+    // },
+
+    initialize: function() {
+      var self = this;
+
+      // this.model.on('all', function(a, b, c) {
+      //   console.log('model all', a, b, c);
+      // });
+
+      this.model.on("error invalid", function(model, error) {
+        console.log('invalidEvent', model);
+        if (typeof error == 'object' && error.responseText) {
+          error = eval('(' + error.responseText + ')').msg;
+        }
+        self.$el.find('.error-message').html(error);
+      });
+
+      this.model.on("change", function() {
+        self.$el.find('.error-message').html('');
+      });
     },
 
     events: {
@@ -283,17 +342,18 @@ define(function(require) {
     submitOnClick: function(e) {
       e.preventDefault();
 
-      // FIXME: Wrap in a model method
-
       this.model.register({
+        username: $('#register-username').val(),
         firstName: $('#register-first-name').val(),
         lastName: $('#register-last-name').val(),
         password: $('#register-password').val(),
         phoneNumber: $('#register-phone-number').val()
       });
 
+      // FIXME: No-op?
       return false;
     }
+
   });
 
   // ---------------------------------------------------------------------------
@@ -308,18 +368,18 @@ define(function(require) {
     model: availableModel
   });
 
-  $('#pages #view-titles').html(list.render().el);
+  $('#page-view-titles').html(list.render().el);
   list.model.fetch();
 
 
   var registerPage = new RegisterPage({
-    el: '#pages #register',
+    el: '#page-register',
     model: appModel.currentUser
   });
 
   var signInPage = new SignInPage({
     // FIXME: change id to page-sign-in
-    el: '#pages #sign-in',
+    el: '#page-signin',
     model: appModel.currentSession
   });
 
