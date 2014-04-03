@@ -97,7 +97,6 @@ define(function(require) {
     },
 
     validate: function(attrs) {
-      console.log('validate', attrs);
       if ( ! attrs.username ) {
         return 'Username is invalid';
       }
@@ -159,11 +158,25 @@ define(function(require) {
 
   var SessionModel = BaseModel.extend({
     signIn: function(options) {
-      this.fetch({
+      if (! options.username) {
+        this.trigger('invalid', this, 'Username is invalid');
+        return;
+      }
+
+      if (! options.password) {
+        this.trigger('invalid', this, 'Password is invalid');
+        return;
+      }
+
+      return this.fetch({
         url: this.appModel.url() +
           'signin/' + options.username +
           '/' + options.password
       });
+    },
+
+    isSignedIn: function() {
+      return this.get('sessionId');
     },
 
     defaults: function() {
@@ -176,6 +189,7 @@ define(function(require) {
   });
 
   // VIEWS
+  // ---------------------------------------------------------------------------
 
   var TitleView = Backbone.View.extend({
     tagName: 'tr',
@@ -192,7 +206,6 @@ define(function(require) {
       this.model.on('remove', function() {
         self.remove();
       });
-
     },
 
     events: {
@@ -284,7 +297,7 @@ define(function(require) {
 
       // FIXME: Move to base class?
       this.model.on("error invalid", function(model, error) {
-        console.log('invalidEvent', model);
+        console.log('signIn EI', model, error);
         if (typeof error == 'object' && error.responseText) {
           error = eval('(' + error.responseText + ')').msg;
         }
@@ -292,8 +305,12 @@ define(function(require) {
       });
 
       this.model.on("change", function() {
-        // FIXME: Set cookie
+        // FIXME: Set cookie?
         self.$el.find('.error-message').html('');
+      });
+
+      this.model.on("all", function(evenName) {
+        console.log(evenName);
       });
 
     },
