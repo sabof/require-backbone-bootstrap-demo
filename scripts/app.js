@@ -36,7 +36,10 @@ define(function(require) {
 
   var TitleModel = BaseModel.extend({
     url: function() {
-      // return this.appModel.currentUser.url();
+      // FIXME: Do I need the full URL?
+      // FIXME: How do full urls relate to urlRoot?
+      return this.appModel.currentUser.url() +
+        '/titles/' + this.get('id');
     },
 
     defaults: function() {
@@ -47,12 +50,22 @@ define(function(require) {
       };
     },
 
-    sync: function(method, model, options) {
-      if (method == 'delete') {
-        // return $.ajax('');
-      } else {
-        return Backbone.sync(method, model, options);
-      }
+    addToFavourites: function() {
+      var sessionId = this.appModel.currentSession.get('sessionId');
+      return BaseModel.prototype.sync(
+        'update', this, {
+          // url :
+
+          headers: {
+            // FIXME: Better way of doing it?
+            'Content-Type': 'application/json',
+            sessionId: sessionId
+          },
+        });
+    },
+
+    removeFromFavourites: function() {
+
     }
   });
 
@@ -82,8 +95,23 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var UserModel = BaseModel.extend({
+    defaults: function() {
+      return {
+	      firstName: null,
+	      lastName: null,
+	      password: null,
+	      username: null,
+	      phoneNumber: null,
+	      userId: null,
+	      age: 0,
+	      genderIsFemale: false,
+	      notes: null,
+	    };
+    },
+
     url: function() {
-      return this.appModel.url() + this.get('username');
+      var userId = this.appModel.currentSession.get('userId');
+      return this.appModel.url() + 'profile/' + userId;
     },
 
     register: function(attrs) {
@@ -102,22 +130,18 @@ define(function(require) {
         );
       }
 
+      if (! this.appModel.currentSession.isSignedIn()) {
+        // FIXME: Trigger error event
+        return;
+      }
       if (! this.set(attrs, {validate: true})) {
         return;
       }
 
       var sessionId = this.appModel.currentSession.get('sessionId');
-      var userId = this.appModel.currentSession.get('userId');
-
-      if (! (userId && sessionId) ) {
-        console.log(userId, sessionId);
-        // FIXME: Trigger error event
-        return;
-      }
 
       return BaseModel.prototype.sync(
         'update', this, {
-          url: this.appModel.url() + 'profile/' + userId,
           dataType: 'json',
           data: JSON.stringify(this.attributes),
 
@@ -131,22 +155,20 @@ define(function(require) {
           }
         }
       );
-
     },
 
     getUserDetails: function(options) {
-      var sessionId = this.appModel.currentSession.get('sessionId');
-      var userId = this.appModel.currentSession.get('userId');
+      console.log('Retrieved user details');
 
-      if (! (userId && sessionId) ) {
-        console.log(userId, sessionId);
+      var sessionId = this.appModel.currentSession.get('sessionId');
+
+      if (! (this.appModel.currentSession.isSignedIn()) ) {
         // FIXME: Trigger error event
         return;
       }
 
       options = $.extend(
         {}, options || {}, {
-          url: this.appModel.url() + 'profile/' + userId,
           headers: {
             sessionId: sessionId,
             'Content-Type': 'application/json'
@@ -175,20 +197,16 @@ define(function(require) {
       }
     },
 
-    defaults: function() {
-      return {
-	      firstName: null,
-	      lastName: null,
-	      password: null,
-	      username: null,
-	      phoneNumber: null,
-	      userId: null,
-	      age: 0,
-	      genderIsFemale: false,
-	      notes: null,
-	    };
+    initialize: function() {
+      var self = this;
+      this.appModel.currentSession.on(
+        'change:userId', function() {
+          self.getUserDetails();
+        }
+      );
     },
 
+    // FIXME: Move to base class?
     sync: function(method, model, options) {
       if (options.forceMethod) {
         method = options.forceMethod;
@@ -206,11 +224,11 @@ define(function(require) {
     },
 
     initialize: function() {
-      this.currentUser = new UserModel(false, {
+      this.currentSession = new SessionModel(false, {
         appModel: this
       });
 
-      this.currentSession = new SessionModel(false, {
+      this.currentUser = new UserModel(false, {
         appModel: this
       });
     }
@@ -289,11 +307,23 @@ define(function(require) {
 
   // ---------------------------------------------------------------------------
 
+  // FIXME: Merge with AvailableTitlesCollection?
   var UserTitlesCollection = BaseCollection.extend({
     url: function() {
       var root = this.appModel.currentUser.url();
       return root + '/titles';
+    },
+
+    parse: function(response, options) {
+      return response.titles;
+    },
+
+    model: function(attrs, options) {
+      var title = new TitleModel(attrs, options);
+      title.appModel = options.collection.appModel;
+      return title;
     }
+
   });
 
   // ---------------------------------------------------------------------------
@@ -439,12 +469,14 @@ define(function(require) {
 
   var appModel = window.appModel = new AppModel();
 
-  var availableModel = window.availableModel = new AvailableTitlesCollection(false, {
+  var availableTitlesCollection =
+      window.availableTitlesCollection =
+      new AvailableTitlesCollection(false, {
     appModel: appModel
   });
 
   var list = window.list = new AvailableTitlesView({
-    model: availableModel
+    model: availableTitlesCollection
   });
 
   $('#page-view-titles').html(list.render().el);
@@ -490,3 +522,6 @@ define(function(require) {
 //     }
 
 // });
+
+// FIXME: Add "Success" messages;
+// FIXME: Make tabbar sections dynamic
