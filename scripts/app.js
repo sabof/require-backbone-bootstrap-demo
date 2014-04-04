@@ -51,21 +51,38 @@ define(function(require) {
     },
 
     addToFavourites: function() {
+      var self = this;
       var sessionId = this.appModel.currentSession.get('sessionId');
       return BaseModel.prototype.sync(
         'update', this, {
-          // url :
-
           headers: {
             // FIXME: Better way of doing it?
             'Content-Type': 'application/json',
             sessionId: sessionId
           },
+
+          success: function() {
+            // FIXME: Verify data contains a success message
+            self.appModel.favouriteTitles.add(self);
+          }
         });
     },
 
     removeFromFavourites: function() {
-
+      var self = this;
+      var sessionId = this.appModel.currentSession.get('sessionId');
+      return BaseModel.prototype.sync(
+        'delete', this, {
+          headers: {
+            // FIXME: Better way of doing it?
+            'Content-Type': 'application/json',
+            sessionId: sessionId
+          },
+          success: function() {
+            // FIXME: Verify data contains a success message
+            self.appModel.favouriteTitles.remove(self);
+          }
+        });
     }
   });
 
@@ -83,8 +100,20 @@ define(function(require) {
       return title;
     },
 
+    getTitles: function() {
+      console.log('Retrieved titles');
+      return this.fetch();
+    },
+
     initialize: function() {
-      // this.model = this.model.bind(this);
+      var self = this;
+
+      // FIXME: Do I need this?
+      this.appModel.currentSession.on(
+        'change:userId', function() {
+          self.getTitles();
+        }
+      );
     },
 
     parse: function(response, options) {
@@ -199,6 +228,7 @@ define(function(require) {
 
     initialize: function() {
       var self = this;
+
       this.appModel.currentSession.on(
         'change:userId', function() {
           self.getUserDetails();
@@ -224,6 +254,7 @@ define(function(require) {
     },
 
     initialize: function() {
+      // FIXME: DI?
       this.currentSession = new SessionModel(false, {
         appModel: this
       });
@@ -231,7 +262,17 @@ define(function(require) {
       this.currentUser = new UserModel(false, {
         appModel: this
       });
-    }
+
+      this.availableTitles = new AvailableTitlesCollection(false, {
+        appModel: this
+      });
+
+      this.favouriteTitles = new UserFavouriteTitlesCollection(false, {
+        appModel: this
+      });
+
+    },
+
   });
 
   // ---------------------------------------------------------------------------
@@ -257,7 +298,10 @@ define(function(require) {
       return this.fetch(options);
     },
 
-    // FIXME: Add signOut?
+    signOut: function() {
+      // FIXME: Implement me
+      // myModel.clear().set(myModel.defaults);
+    },
 
     isSignedIn: function() {
       return this.get('sessionId');
@@ -308,7 +352,7 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   // FIXME: Merge with AvailableTitlesCollection?
-  var UserTitlesCollection = BaseCollection.extend({
+  var UserFavouriteTitlesCollection = BaseCollection.extend({
     url: function() {
       var root = this.appModel.currentUser.url();
       return root + '/titles';
@@ -384,6 +428,7 @@ define(function(require) {
         username: $('#signin-username').val(),
         password: $('#signin-password').val()
       });
+
       // var user = this.appModel.currentUser;
       // this.model.fetch(false, {url: );
     },
@@ -469,14 +514,14 @@ define(function(require) {
 
   var appModel = window.appModel = new AppModel();
 
-  var availableTitlesCollection =
-      window.availableTitlesCollection =
-      new AvailableTitlesCollection(false, {
-    appModel: appModel
-  });
+  // var availableTitlesCollection =
+  //     window.availableTitlesCollection =
+  //     new AvailableTitlesCollection(false, {
+  //   appModel: appModel
+  // });
 
   var list = window.list = new AvailableTitlesView({
-    model: availableTitlesCollection
+    model: appModel.availableTitles
   });
 
   $('#page-view-titles').html(list.render().el);
@@ -525,3 +570,5 @@ define(function(require) {
 
 // FIXME: Add "Success" messages;
 // FIXME: Make tabbar sections dynamic
+// FIXME: Show username when signedIn?
+// FIXME: Consistency: prefer events when possible
