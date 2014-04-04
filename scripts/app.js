@@ -94,7 +94,7 @@ define(function(require) {
         });
     },
 
-    getUserDetails: function() {
+    putUserDetails: function(attrs) {
       var sessionId = this.appModel.currentSession.get('sessionId');
       var userId = this.appModel.currentSession.get('userId');
 
@@ -104,13 +104,41 @@ define(function(require) {
         return;
       }
 
-      return this.fetch({
+      return $.ajax({
+        type: 'PUT',
         url: this.appModel.url() + 'profile/' + userId,
+        dataType: 'json',
+        data: JSON.stringify(this.attributes),
         headers: {
-          sessionId: sessionId,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          sessionId: sessionId
+        },
+        success: function(data) {
+          console.log(data);
         }
       });
+    },
+
+    getUserDetails: function(options) {
+      var sessionId = this.appModel.currentSession.get('sessionId');
+      var userId = this.appModel.currentSession.get('userId');
+
+      if (! (userId && sessionId) ) {
+        console.log(userId, sessionId);
+        // FIXME: Trigger error event
+        return;
+      }
+
+      options = $.extend(
+        {}, options || {}, {
+          url: this.appModel.url() + 'profile/' + userId,
+          headers: {
+            sessionId: sessionId,
+            'Content-Type': 'application/json'
+          }
+        });
+
+      return this.fetch(options);
     },
 
     validate: function(attrs) {
@@ -175,22 +203,24 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var SessionModel = BaseModel.extend({
-    signIn: function(options) {
-      if (! options.username) {
+    signIn: function(attrs, options) {
+      if (! attrs.username) {
         this.trigger('invalid', this, 'Username is invalid');
         return;
       }
 
-      if (! options.password) {
+      if (! attrs.password) {
         this.trigger('invalid', this, 'Password is invalid');
         return;
       }
 
-      return this.fetch({
+      options = $.extend({}, options || {}, {
         url: this.appModel.url() +
-          'signin/' + options.username +
-          '/' + options.password
+          'signin/' + attrs.username + '/' +
+          attrs.password
       });
+
+      return this.fetch(options);
     },
 
     // FIXME: Add signOut?
