@@ -83,8 +83,6 @@ define(function(require) {
 
   var UserModel = BaseModel.extend({
     url: function() {
-      // 'register' or 'sign-in'
-      // if (this.appModel.sessionId
       return this.appModel.url() + this.get('username');
     },
 
@@ -94,6 +92,25 @@ define(function(require) {
           url: this.appModel.url() + 'register/' + attrs.username,
           forceMethod: 'update'
         });
+    },
+
+    getUserDetails: function() {
+      var sessionId = this.appModel.currentSession.get('sessionId');
+      var userId = this.appModel.currentSession.get('userId');
+
+      if (! (userId && sessionId) ) {
+        console.log(userId, sessionId);
+        // FIXME: Trigger error event
+        return;
+      }
+
+      return this.fetch({
+        url: this.appModel.url() + 'profile/' + userId,
+        headers: {
+          sessionId: sessionId,
+          'Content-Type': 'application/json'
+        }
+      });
     },
 
     validate: function(attrs) {
@@ -134,6 +151,7 @@ define(function(require) {
       }
       return Backbone.sync(method, model, options);
     }
+
   });
 
   // ---------------------------------------------------------------------------
@@ -174,6 +192,8 @@ define(function(require) {
           '/' + options.password
       });
     },
+
+    // FIXME: Add signOut?
 
     isSignedIn: function() {
       return this.get('sessionId');
@@ -261,7 +281,7 @@ define(function(require) {
       // });
     },
 
-    render:function (eventName) {
+    render: function (eventName) {
       // console.log('length', this.model.models.length);
       _.each(this.model.models, function (title) {
         // console.log('adding', title);
@@ -299,7 +319,7 @@ define(function(require) {
       this.model.on("error invalid", function(model, error) {
         console.log('signIn EI', model, error);
         if (typeof error == 'object' && error.responseText) {
-          error = eval('(' + error.responseText + ')').msg;
+          error = (new Function('return ' + error.responseText) ()).msg;
         }
         self.$el.find('.error-message').html(error);
       });
@@ -328,10 +348,6 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var RegisterPage = Backbone.View.extend({
-    // setErrorMessage: function(message) {
-
-    // },
-
     initialize: function() {
       var self = this;
 
@@ -342,7 +358,7 @@ define(function(require) {
       this.model.on("error invalid", function(model, error) {
         console.log('invalidEvent', model);
         if (typeof error == 'object' && error.responseText) {
-          error = eval('(' + error.responseText + ')').msg;
+          error = (new Function('return ' + error.responseText) ()).msg;
         }
         self.$el.find('.error-message').html(error);
       });
@@ -375,7 +391,7 @@ define(function(require) {
 
   // ---------------------------------------------------------------------------
 
-  var appModel = new AppModel();
+  var appModel = window.appModel = new AppModel();
 
   var availableModel = window.availableModel = new AvailableTitlesCollection(false, {
     appModel: appModel
@@ -387,7 +403,6 @@ define(function(require) {
 
   $('#page-view-titles').html(list.render().el);
   list.model.fetch();
-
 
   var registerPage = new RegisterPage({
     el: '#page-register',
