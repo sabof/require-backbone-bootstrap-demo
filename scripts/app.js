@@ -97,12 +97,14 @@ define(function(require) {
     putUserDetails: function(attrs) {
       if (arguments.length !== 1) {
         throw new Error(
-          'Wrong number of arguments; Expected 1, but got ' +
+          'Wrong number of arguments. Expected 1, but got ' +
             arguments.length
         );
       }
 
-      // FIXME: set attrs with validation. If if fails don't send the request
+      if (! this.set(attrs, {validate: true})) {
+        return;
+      }
 
       var sessionId = this.appModel.currentSession.get('sessionId');
       var userId = this.appModel.currentSession.get('userId');
@@ -118,10 +120,12 @@ define(function(require) {
           url: this.appModel.url() + 'profile/' + userId,
           dataType: 'json',
           data: JSON.stringify(this.attributes),
+
           headers: {
             'Content-Type': 'application/json',
             sessionId: sessionId
           },
+
           success: function(data) {
             console.log(data);
           }
