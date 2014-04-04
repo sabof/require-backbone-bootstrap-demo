@@ -34,6 +34,29 @@ define(function(require) {
 
   // ---------------------------------------------------------------------------
 
+  var BaseView = Backbone.Collection.extend({
+    setMessages: function(messages) {
+      messages = _.groupBy(messages, 'type');
+      var text = '';
+
+      if (messages.error) {
+        text = _.pluck(messages.error, 'message');
+        this.$el.find('.error-message').show().html(text);
+      } else {
+        this.$el.find('.error-message').hide();
+      }
+
+      if (messages.success) {
+        text = _.pluck(messages.success, 'message');
+        this.$el.find('.success-message').show().html(text);
+      } else {
+        this.$el.find('.success-message').hide();
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+
   var TitleModel = BaseModel.extend({
     url: function() {
       // FIXME: Do I need the full URL?
@@ -55,11 +78,8 @@ define(function(require) {
       var sessionId = this.appModel.currentSession.get('sessionId');
       return BaseModel.prototype.sync(
         'update', this, {
-          headers: {
-            // FIXME: Better way of doing it?
-            'Content-Type': 'application/json',
-            sessionId: sessionId
-          },
+          contentType: 'application/json',
+          headers: { sessionId: sessionId },
 
           success: function() {
             // FIXME: Verify data contains a success message
@@ -73,11 +93,8 @@ define(function(require) {
       var sessionId = this.appModel.currentSession.get('sessionId');
       return BaseModel.prototype.sync(
         'delete', this, {
-          headers: {
-            // FIXME: Better way of doing it?
-            'Content-Type': 'application/json',
-            sessionId: sessionId
-          },
+          contentType: 'application/json',
+          headers: { sessionId: sessionId },
           success: function() {
             // FIXME: Verify data contains a success message
             self.appModel.favouriteTitles.remove(self);
@@ -174,10 +191,8 @@ define(function(require) {
           dataType: 'json',
           data: JSON.stringify(this.attributes),
 
-          headers: {
-            'Content-Type': 'application/json',
-            sessionId: sessionId
-          },
+          contentType: 'application/json',
+          headers: { sessionId: sessionId },
 
           success: function(data) {
             console.log(data);
@@ -198,10 +213,8 @@ define(function(require) {
 
       options = $.extend(
         {}, options || {}, {
-          headers: {
-            sessionId: sessionId,
-            'Content-Type': 'application/json'
-          }
+          contentType: 'application/json',
+          headers: { sessionId: sessionId },
         });
 
       return this.fetch(options);
@@ -209,32 +222,56 @@ define(function(require) {
 
     validate: function(attrs) {
       // FIXME: return a {property, message} object
+      var errors = [];
       if ( ! attrs.username ) {
-        return 'Username is invalid';
+        errors.push({
+          type: 'error',
+          property: 'username',
+          message: 'Username is invalid'
+        });
       }
       if ( ! attrs.firstName ) {
-        return 'First name is invalid';
+        errors.push({
+          type: 'error',
+          message: 'First name is invalid'
+        });
       }
       if ( ! attrs.lastName ) {
-        return 'Last name is invalid';
+        errors.push({
+          type: 'error',
+          property: 'lastName',
+          message: 'Last name is invalid'
+        });
       }
       if ( ! attrs.password ) {
-        return 'Password is invalid';
+        errors.push({
+          type: 'error',
+          property: 'password',
+          message:  'Password is invalid'
+        });
       }
       if ( ! attrs.phoneNumber ) {
-        return 'Phone number is invalid';
+        errors.push({
+          type: 'error',
+          property: 'phoneNumber',
+          message: 'Phone number is invalid'
+        });
       }
+      if (errors.length) {
+        return errors;
+      }
+
     },
 
-    initialize: function() {
-      var self = this;
+      initialize: function() {
+        var self = this;
 
-      this.appModel.currentSession.on(
-        'change:userId', function() {
-          self.getUserDetails();
-        }
-      );
-    },
+        this.appModel.currentSession.on(
+          'change:userId', function() {
+            self.getUserDetails();
+          }
+        );
+      },
 
     // FIXME: Move to base class?
     sync: function(method, model, options) {
@@ -279,6 +316,8 @@ define(function(require) {
 
   var SessionModel = BaseModel.extend({
     signIn: function(attrs, options) {
+      var self = this;
+
       if (! attrs.username) {
         this.trigger('invalid', this, 'Username is invalid');
         return;
@@ -292,7 +331,11 @@ define(function(require) {
       options = $.extend({}, options || {}, {
         url: this.appModel.url() +
           'signin/' + attrs.username + '/' +
-          attrs.password
+          attrs.password,
+
+        success: function() {
+          self.trigger('signedin');
+        }
       });
 
       return this.fetch(options);
@@ -439,10 +482,6 @@ define(function(require) {
       // FIXME: Move to base class?
       this.model.on("error invalid", function(model, error) {
         console.log('signIn EI', model, error);
-        if (typeof error == 'object' && error.responseText) {
-          error = (new Function('return ' + error.responseText) ()).msg;
-        }
-        self.$el.find('.error-message').html(error);
       });
 
       this.model.on("change", function() {
@@ -460,8 +499,6 @@ define(function(require) {
       'click .submit' : 'submitOnClick'
     }
   });
-
-  // $('#main-content').html(item.render().el);
 
   // Model per page?
   // Is there something special about the 'model' property?
@@ -512,7 +549,34 @@ define(function(require) {
 
   // ---------------------------------------------------------------------------
 
+  var WrapperView = Backbone.View.extend({
+    initialize: function() {
+      var self = this;
+
+      this.model.currentSession.on('signedin signedout', function() {
+        self.render();
+      });
+      this.render();
+    },
+
+    render: function() {
+      this.$el.find('li').show();
+      if (this.model.currentSession.isSignedIn()) {
+        this.$el.find('a[href=#page-signin], a[href=#page-register]').parent().hide();
+      } else {
+        this.$el.find('a[href=#page-user-details]').parent().hide();
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+
   var appModel = window.appModel = new AppModel();
+
+  var wrapperModel = new WrapperView({
+    el: '#main-navigation',
+    model: appModel
+  });
 
   // var availableTitlesCollection =
   //     window.availableTitlesCollection =
