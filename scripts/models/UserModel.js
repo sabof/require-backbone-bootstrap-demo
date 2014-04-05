@@ -57,17 +57,11 @@ define(function(require) {
 
           contentType: 'application/json',
           headers: { sessionId: sessionId },
-
-          success: function(data) {
-            // console.log(data);
-          }
         }
       );
     },
 
     getUserDetails: function(options) {
-      // console.log('Retrieved user details');
-
       var sessionId = this.appModel.currentSession.get('sessionId');
 
       if (! (this.appModel.currentSession.isSignedIn()) ) {

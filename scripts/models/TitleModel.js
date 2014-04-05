@@ -3,10 +3,6 @@ define(function(require) {
 
   return BaseModel.extend({
     initialize: function() {
-      this.on('all', function(event, model, message) {
-        console.log('titleModel', event, model, message);
-      });
-
       var self = this;
 
       // FIXME: Can be optimized
@@ -65,7 +61,6 @@ define(function(require) {
             if (! self.isFavourite()) {
               self.appModel.favouriteTitles.add(self);
               self.trigger('favouriteadded');
-              // console.log('Added favourite');
             }
           }
         });
@@ -91,7 +86,6 @@ define(function(require) {
             if (theTitle) {
               self.appModel.favouriteTitles.remove(theTitle);
               self.trigger('favouriteremoved');
-              // console.log('Removed favourite');
             }
           }
         });

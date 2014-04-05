@@ -9,8 +9,6 @@ define(function(require) {
     },
 
     model: function(attrs, options) {
-      // debugger;
-      console.log('atc', options.collection.appModel);
       return new TitleModel(
         attrs,
         $.extend(
@@ -21,7 +19,6 @@ define(function(require) {
     },
 
     getTitles: function() {
-      // console.log('Retrieved titles');
       return this.fetch();
     },
 

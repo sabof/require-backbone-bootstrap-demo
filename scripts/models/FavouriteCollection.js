@@ -2,20 +2,16 @@ define(function(require) {
   var BaseCollection = require('models/BaseCollection');
   var TitleModel = require('models/TitleModel');
   var $ = require('jquery');
+  var _ = require('underscore');
 
   // FIXME: Merge with AvailableTitlesCollection?
   return BaseCollection.extend({
     initialize: function() {
       var self = this;
 
-      this.on('all', function(event, model, message) {
-        console.log('userFavouriteTitlesCollection', event, model, message);
-      });
-
       // FIXME: Do I need this?
       this.appModel.currentSession.on(
         'change:userId', function(model, value) {
-          console.log('favs', value);
           if (value) {
             self.getTitles();
           } else {
@@ -30,10 +26,8 @@ define(function(require) {
 
             self.reset([]);
 
-            models.forEach(function(model) {
-              console.log('clear trigger');
-              model.trigger('favouriteremoved');
-            });
+            _.invoke(models, 'trigger', 'favouriteremoved');
+
           }
         }
       );

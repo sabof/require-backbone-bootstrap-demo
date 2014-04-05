@@ -3,6 +3,10 @@ define(function(require) {
   var BaseView = require('views/BaseView');
 
   return BaseView.extend({
+    events: {
+      "click .toggle": "toggleFavourite"
+    },
+
     tagName: 'tr',
 
     template: _.template(
@@ -29,12 +33,9 @@ define(function(require) {
     initialize: function() {
       var self = this;
 
-      this.model.on(
+      this.model.bind(
         'favouriteadded favouriteremoved',
-        function() {
-          console.log('render: fav change');
-          self.render();
-        }
+        this.render, this
       );
 
       this.$el.html(
@@ -43,10 +44,6 @@ define(function(require) {
         )
       );
 
-    },
-
-    events: {
-      "click .toggle": "toggleFavourite"
     },
 
     render: function() {

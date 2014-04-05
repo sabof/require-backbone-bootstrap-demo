@@ -5,12 +5,7 @@ define(function(require) {
     initialize: function() {
       var self = this;
 
-      // this.model.on('all', function(a, b, c) {
-      //   console.log('model all', a, b, c);
-      // });
-
       this.model.on("error invalid", function(model, error) {
-        // console.log('invalidEvent', model);
         if (typeof error == 'object' && error.responseText) {
           error = (new Function('return ' + error.responseText) ()).msg;
         }

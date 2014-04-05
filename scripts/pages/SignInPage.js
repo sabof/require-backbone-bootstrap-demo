@@ -19,9 +19,6 @@ define(function(require) {
       var self = this;
 
       // FIXME: Move to base class?
-      // this.model.on("error invalid", function(model, error) {
-      //   console.log('signIn EI', model, error);
-      // });
 
       this.model.on("change", function() {
         // FIXME: Set cookie?

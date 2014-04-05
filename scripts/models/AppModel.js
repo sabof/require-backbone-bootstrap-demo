@@ -11,7 +11,6 @@ define(function(require) {
     },
 
     initialize: function() {
-      // FIXME: DI?
       this.currentSession = new SessionModel(false, {
         appModel: this
       });
