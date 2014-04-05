@@ -1,6 +1,7 @@
 define(function(require) {
   var BaseCollection = require('models/BaseCollection');
   var TitleModel = require('models/TitleModel');
+  var $ = require('jquery');
 
   return BaseCollection.extend({
     url: function() {
@@ -8,10 +9,15 @@ define(function(require) {
     },
 
     model: function(attrs, options) {
-      var title = new TitleModel(attrs, options);
-      title.appModel = options.collection.appModel;
-
-      return title;
+      // debugger;
+      console.log('atc', options.collection.appModel);
+      return new TitleModel(
+        attrs,
+        $.extend(
+          {appModel: options.collection.appModel},
+          options
+        )
+      );
     },
 
     getTitles: function() {
@@ -20,16 +26,7 @@ define(function(require) {
     },
 
     initialize: function() {
-      var self = this;
-
-      // FIXME: Do I need this?
-      this.appModel.currentSession.on(
-        'change:userId', function() {
-          // console.log();
-          self.getTitles();
-        }
-      );
-
+      this.getTitles();
     },
 
     parse: function(response, options) {

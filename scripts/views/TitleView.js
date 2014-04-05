@@ -20,12 +20,22 @@ define(function(require) {
       } else {
         this.model.addToFavourites();
       }
+
       // FIXME: Add as an event binding
       // this.render();
+
     },
 
     initialize: function() {
       var self = this;
+
+      this.model.on(
+        'favouriteadded favouriteremoved',
+        function() {
+          console.log('render: fav change');
+          self.render();
+        }
+      );
 
       this.$el.html(
         this.template(
@@ -33,14 +43,6 @@ define(function(require) {
         )
       );
 
-      // FIXME: Move to the Collection?
-      this.model.appModel.favouriteTitles.on(
-        'add remove', function(model, collection) {
-          // console.log('favCha', arguments);
-          if (model.isEqual(self.model)) {
-            self.render();
-          }
-        });
     },
 
     events: {

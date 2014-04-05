@@ -21,17 +21,18 @@ define(function(require) {
       // FIXME: Change to add?
       this.model.bind("sync", this.render, this);
 
+      this.views = [];
     },
 
     render: function (eventName) {
-      _.each(this.model.models, function (title) {
+      _.each(
+        this.model.models, function (title) {
+          var view = new TitleView({model: title});
+          this.views.push(view);
 
-        this.$el.append(
-          new TitleView({model: title})
-            .render()
-            .el
-        );
-      }, this);
+          this.$el.append(view.render().el);
+        }, this
+      );
 
       return this;
     },

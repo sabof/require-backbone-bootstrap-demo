@@ -1,6 +1,7 @@
 define(function(require) {
   var BaseModel = require('model/BaseModel');
   var Backbone = require('backbone');
+  var $ = require('jquery');
 
   return BaseModel.extend({
     defaults: function() {
@@ -75,7 +76,7 @@ define(function(require) {
       }
 
       options = $.extend(
-        {}, options || {}, {
+        {}, options, {
           contentType: 'application/json',
           headers: { sessionId: sessionId },
         });

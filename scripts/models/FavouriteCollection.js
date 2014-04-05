@@ -1,6 +1,7 @@
 define(function(require) {
   var BaseCollection = require('models/BaseCollection');
   var TitleModel = require('models/TitleModel');
+  var $ = require('jquery');
 
   // FIXME: Merge with AvailableTitlesCollection?
   return BaseCollection.extend({
@@ -18,7 +19,21 @@ define(function(require) {
           if (value) {
             self.getTitles();
           } else {
+            var modelIds = self.models.map(function(model) {
+              return model.get('id');
+            });
+
+            var models = self.appModel.availableTitles.models.filter(
+              function(model) {
+                return modelIds.indexOf(model.get('id')) !== -1;
+              });
+
             self.reset([]);
+
+            models.forEach(function(model) {
+              console.log('clear trigger');
+              model.trigger('favouriteremoved');
+            });
           }
         }
       );
@@ -37,8 +52,6 @@ define(function(require) {
           var favouriteIds = self.models.map(function(it) {
             return it.get('id');
           });
-
-          // self.models.
         }
       });
     },
@@ -53,10 +66,15 @@ define(function(require) {
     },
 
     model: function(attrs, options) {
-      var title = new TitleModel(attrs, options);
-      title.appModel = options.collection.appModel;
-      return title;
-    }
+      console.log('fc', options.collection.appModel);
+      return new TitleModel(
+        attrs,
+        $.extend(
+          {appModel: options.collection.appModel},
+          options
+        )
+      );
+    },
 
   });
 

@@ -21,39 +21,3 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
 });
-
-// // Router
-// var AppRouter = Backbone.Router.extend({
-
-//     routes:{
-//         "":"list",
-//         "wines/:id":"wineDetails"
-//     },
-
-//     initialize:function () {
-//         $('#header').html(new HeaderView().render().el);
-//     },
-
-//     list:function () {
-//         this.wineList = new WineCollection();
-//         this.wineListView = new WineListView({model:this.wineList});
-//         this.wineList.fetch();
-//         $('#sidebar').html(this.wineListView.render().el);
-//     },
-
-//     wineDetails:function (id) {
-//         this.wine = this.wineList.get(id);
-//         if (appModel.wineView) appModel.wineView.close();
-//         this.wineView = new WineView({model:this.wine});
-//         $('#content').html(this.wineView.render().el);
-//     }
-
-// });
-
-// FIXME: Add "Success" messages;
-// FIXME: Make tabbar sections dynamic
-// FIXME: Show username when signedIn?
-// FIXME: Consistency: prefer events when possible
-// FIXME: Add sorting
-// FIXME: Add sign-out
-// FIXME: Add submit to "profile-edit"

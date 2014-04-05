@@ -16,7 +16,7 @@ define(function(require) {
         return;
       }
 
-      options = $.extend({}, options || {}, {
+      options = $.extend({}, options, {
         url: this.appModel.url() +
           'signin/' + attrs.username + '/' +
           attrs.password,

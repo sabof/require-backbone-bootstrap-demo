@@ -3,9 +3,25 @@ define(function(require) {
 
   return BaseModel.extend({
     initialize: function() {
-      // this.on('all', function(event, model, message) {
-      //   console.log('titleModel', event, model, message);
-      // });
+      this.on('all', function(event, model, message) {
+        console.log('titleModel', event, model, message);
+      });
+
+      var self = this;
+
+      // FIXME: Can be optimized
+      this.appModel.favouriteTitles.on('add', function(model) {
+          if (model.isEqual(self)) {
+            self.trigger('favouriteadded');
+          }
+        });
+
+      this.appModel.favouriteTitles.on('remove', function(model) {
+          if (model.isEqual(self)) {
+            self.trigger('favouriteremoved');
+          }
+        });
+
     },
 
     url: function() {
