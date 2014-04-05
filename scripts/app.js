@@ -9,29 +9,12 @@ define(function(require) {
   var BaseCollection = require('models/BaseCollection');
   var AppModel = require('models/AppModel');
 
+  var BaseView = require('views/BaseView');
+  var BasePage = require('pages/BasePage');
+  var TitleView = require('views/TitleView');
+  var AvailableTitlesView = require('views/AvailableTitlesView');
+
   // ---------------------------------------------------------------------------
-
-  var BaseView = Backbone.Collection.extend({
-    setMessages: function(messages) {
-      messages = _.groupBy(messages, 'type');
-      var text = '';
-
-      if (messages.error) {
-        text = _.pluck(messages.error, 'message');
-        this.$el.find('.error-message').show().html(text);
-      } else {
-        this.$el.find('.error-message').hide();
-      }
-
-      if (messages.success) {
-        text = _.pluck(messages.success, 'message');
-        this.$el.find('.success-message').show().html(text);
-      } else {
-        this.$el.find('.success-message').hide();
-      }
-    }
-  });
-
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
@@ -40,113 +23,10 @@ define(function(require) {
 
   // VIEWS
   // ---------------------------------------------------------------------------
-
-  var TitleView = Backbone.View.extend({
-    tagName: 'tr',
-
-    template: _.template(
-      '<td class="toggle">[F]</td>' +
-        '<td><%= name %></td>'
-    ),
-
-    isFavourite: function() {
-      return this.model.isFavourite();
-    },
-
-    toggleFavourite: function() {
-      if (this.isFavourite()) {
-        this.model.removeFromFavourites();
-      } else {
-        this.model.addToFavourites();
-      }
-      // FIXME: Add as an event binding
-      // this.render();
-    },
-
-    initialize: function() {
-      var self = this;
-
-      // this.model.on('remove', function() {
-      //   self.remove();
-      // });
-
-      this.$el.html(
-        this.template(
-          this.model.toJSON()
-      ));
-
-      // FIXME: Move to TitleView?
-      this.model.appModel.favouriteTitles.on(
-        'add remove', function(model, collection) {
-          // console.log('favCha', arguments);
-          if (model.isEqual(self.model)) {
-            self.render();
-          }
-        });
-    },
-
-    events: {
-      "click .toggle": "toggleFavourite"
-    },
-
-    render: function() {
-      this.$el.toggleClass(
-        'favourite',
-        this.isFavourite()
-      );
-      return this;
-    }
-  });
-
+  // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
 
-
-  // ---------------------------------------------------------------------------
-
-  var UserTitlesView = Backbone.View.extend({
-
-  });
-
-  // ---------------------------------------------------------------------------
-
-  var AvailableTitlesView = Backbone.View.extend({
-    tagName: 'table',
-
-    initialize: function () {
-      this.$el.addClass('table');
-
-      // this.model.bind("reset", this.render, this);
-      // var self = this;
-      // this.model.bind("add", function (wine) {
-      //   $(self.el).append(new WineListItemView({model:wine}).render().el);
-      // });
-
-      // this.model.bind("reset", this.render, this);
-      // this.model.bind("change", this.render, this);
-
-      // FIXME: Change to add?
-      this.model.bind("sync", this.render, this);
-
-    },
-
-    render: function (eventName) {
-      _.each(this.model.models, function (title) {
-
-        this.$el.append(
-          new TitleView({model: title})
-            .render()
-            .el
-        );
-      }, this);
-
-      return this;
-    },
-
-  });
-
-  // ---------------------------------------------------------------------------
-
-  var SignInPage = Backbone.View.extend({
+  var SignInPage = BasePage.extend({
     submitOnClick: function(e) {
       e.preventDefault();
 
@@ -184,7 +64,7 @@ define(function(require) {
 
   // ---------------------------------------------------------------------------
 
-  var RegisterPage = Backbone.View.extend({
+  var RegisterPage = BasePage.extend({
     initialize: function() {
       var self = this;
 

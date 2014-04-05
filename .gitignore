@@ -2,3 +2,5 @@
 /.tern-port
 /scripts/.tern-port
 /scripts/libs/.tern-port
+/scripts/models/.tern-port
+/scripts/pages/.tern-port
