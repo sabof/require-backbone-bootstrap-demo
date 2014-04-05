@@ -9,6 +9,8 @@ define(function(require) {
     initialize: function () {
       this.$el.addClass('table');
 
+      var self = this;
+
       // this.model.bind("reset", this.render, this);
       // var self = this;
       // this.model.bind("add", function (wine) {
@@ -19,7 +21,15 @@ define(function(require) {
       // this.model.bind("change", this.render, this);
 
       // FIXME: Change to add?
+
       this.model.bind("sync", this.render, this);
+      this.model.appModel.currentSession.bind('signedin', function() {
+        self.$el.addClass('show-favourites');
+      });
+
+      this.model.appModel.currentSession.bind('signedout', function() {
+        self.$el.removeClass('show-favourites');
+      });
 
       this.views = [];
     },

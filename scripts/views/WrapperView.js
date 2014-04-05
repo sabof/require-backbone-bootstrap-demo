@@ -5,9 +5,11 @@ define(function(require) {
     initialize: function() {
       var self = this;
 
-      this.model.currentSession.on('signedin signedout', function() {
-        self.render();
-      });
+      this.model.currentSession.bind(
+        'signedin signedout',
+        this.render, this
+      );
+
       this.render();
     },
 
@@ -30,7 +32,7 @@ define(function(require) {
           .hide();
       } else {
         this.$el
-          .find('a[href=#page-user-details], a[href=#page-signout]')
+          .find('a[href=#page-user-details], #button-signout')
           .parent()
           .hide();
       }

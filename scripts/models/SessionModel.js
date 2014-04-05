@@ -34,6 +34,7 @@ define(function(require) {
       // var self = this;
 
       this.clear().set(this.defaults);
+      this.trigger('signedout');
     },
 
     isSignedIn: function() {
