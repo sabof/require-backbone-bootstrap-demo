@@ -58,9 +58,9 @@ define(function(require) {
 
   var TitleModel = BaseModel.extend({
     initialize: function() {
-      this.on('all', function(event, model, message) {
-        console.log('titleModel', event, model, message);
-      });
+      // this.on('all', function(event, model, message) {
+      //   console.log('titleModel', event, model, message);
+      // });
     },
 
     url: function() {
@@ -86,6 +86,10 @@ define(function(require) {
       });
     },
 
+    isEqual: function(model) {
+      return this.get('id') == model.get('id');
+    },
+
     addToFavourites: function() {
       var self = this;
       var sessionId = this.appModel.currentSession.get('sessionId');
@@ -100,7 +104,7 @@ define(function(require) {
             if (! self.isFavourite()) {
               self.appModel.favouriteTitles.add(self);
               self.trigger('favouriteadded');
-              console.log('Added favourite');
+              // console.log('Added favourite');
             }
           }
         });
@@ -126,7 +130,7 @@ define(function(require) {
             if (theTitle) {
               self.appModel.favouriteTitles.remove(theTitle);
               self.trigger('favouriteremoved');
-              console.log('Removed favourite');
+              // console.log('Removed favourite');
             }
           }
         });
@@ -148,7 +152,7 @@ define(function(require) {
     },
 
     getTitles: function() {
-      console.log('Retrieved titles');
+      // console.log('Retrieved titles');
       return this.fetch();
     },
 
@@ -158,6 +162,7 @@ define(function(require) {
       // FIXME: Do I need this?
       this.appModel.currentSession.on(
         'change:userId', function() {
+          // console.log();
           self.getTitles();
         }
       );
@@ -227,14 +232,14 @@ define(function(require) {
           headers: { sessionId: sessionId },
 
           success: function(data) {
-            console.log(data);
+            // console.log(data);
           }
         }
       );
     },
 
     getUserDetails: function(options) {
-      console.log('Retrieved user details');
+      // console.log('Retrieved user details');
 
       var sessionId = this.appModel.currentSession.get('sessionId');
 
@@ -375,7 +380,9 @@ define(function(require) {
 
     signOut: function() {
       // FIXME: Implement me
-      // myModel.clear().set(myModel.defaults);
+      // var self = this;
+
+      this.clear().set(this.defaults);
     },
 
     isSignedIn: function() {
@@ -432,11 +439,10 @@ define(function(require) {
       this.model.appModel.favouriteTitles.on(
         'add remove', function(model, collection) {
           // console.log('favCha', arguments);
-          if (model.get('id') == self.model.get('id')) {
+          if (model.isEqual(self.model)) {
             self.render();
           }
         });
-
     },
 
     events: {
@@ -465,8 +471,13 @@ define(function(require) {
 
       // FIXME: Do I need this?
       this.appModel.currentSession.on(
-        'change:userId', function() {
-          self.getTitles();
+        'change:userId', function(model, value) {
+          console.log('favs', value);
+          if (value) {
+            self.getTitles();
+          } else {
+            self.reset([]);
+          }
         }
       );
     },
@@ -474,7 +485,7 @@ define(function(require) {
     getTitles: function() {
       var self = this;
 
-      console.log('Retrieved titles');
+      // console.log('Retrieved titles');
       var sessionId = this.appModel.currentSession.get('sessionId');
       return this.fetch({
         headers: { sessionId: sessionId },
@@ -532,6 +543,7 @@ define(function(require) {
 
       // FIXME: Change to add?
       this.model.bind("sync", this.render, this);
+
     },
 
     render: function (eventName) {
@@ -568,18 +580,15 @@ define(function(require) {
       var self = this;
 
       // FIXME: Move to base class?
-      this.model.on("error invalid", function(model, error) {
-        console.log('signIn EI', model, error);
-      });
+      // this.model.on("error invalid", function(model, error) {
+      //   console.log('signIn EI', model, error);
+      // });
 
       this.model.on("change", function() {
         // FIXME: Set cookie?
         self.$el.find('.error-message').html('');
       });
 
-      this.on('all', function(event, model, message) {
-        console.log('signInPage', event, model, message);
-      });
     },
 
     events: {
@@ -601,7 +610,7 @@ define(function(require) {
       // });
 
       this.model.on("error invalid", function(model, error) {
-        console.log('invalidEvent', model);
+        // console.log('invalidEvent', model);
         if (typeof error == 'object' && error.responseText) {
           error = (new Function('return ' + error.responseText) ()).msg;
         }
@@ -646,14 +655,31 @@ define(function(require) {
       this.render();
     },
 
+    events: {
+      'click #button-signout' : 'signOutOnClick'
+    },
+
+    signOutOnClick: function(e) {
+      e.preventDefault();
+      this.model.currentSession.signOut();
+    },
+
     render: function() {
       this.$el.find('li').show();
+
       if (this.model.currentSession.isSignedIn()) {
-        this.$el.find('a[href=#page-signin], a[href=#page-register]').parent().hide();
+        this.$el
+          .find('a[href=#page-signin], a[href=#page-register]')
+          .parent()
+          .hide();
       } else {
-        this.$el.find('a[href=#page-user-details]').parent().hide();
+        this.$el
+          .find('a[href=#page-user-details], a[href=#page-signout]')
+          .parent()
+          .hide();
       }
     }
+
   });
 
   // ---------------------------------------------------------------------------
@@ -723,3 +749,6 @@ define(function(require) {
 // FIXME: Make tabbar sections dynamic
 // FIXME: Show username when signedIn?
 // FIXME: Consistency: prefer events when possible
+// FIXME: Add sorting
+// FIXME: Add sign-out
+// FIXME: Add submit to "profile-edit"

@@ -1,3 +1,7 @@
 .favourite .toggle {
 	background-color: mintcream;
 }
+
+html {
+       overflow-y: scroll;
+}
