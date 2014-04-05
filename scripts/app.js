@@ -23,9 +23,8 @@ define(function(require) {
   var BaseCollection = Backbone.Collection.extend({
     constructor: function(attrs, opts) {
       if (opts && opts.appModel) {
-        console.log('C appModel');
         this.appModel = opts.appModel;
-        delete attrs.appModel;
+        delete opts.appModel;
       }
 
       Backbone.Collection.apply(this, arguments);
@@ -58,6 +57,12 @@ define(function(require) {
   // ---------------------------------------------------------------------------
 
   var TitleModel = BaseModel.extend({
+    initialize: function() {
+      this.on('all', function(event, model, message) {
+        console.log('titleModel', event, model, message);
+      });
+    },
+
     url: function() {
       // FIXME: Do I need the full URL?
       // FIXME: How do full urls relate to urlRoot?
@@ -73,6 +78,14 @@ define(function(require) {
       };
     },
 
+    isFavourite: function() {
+      var self = this;
+      var id = self.get('id');
+      return !! this.appModel.favouriteTitles.find(function(it) {
+        return id === it.get('id');
+      });
+    },
+
     addToFavourites: function() {
       var self = this;
       var sessionId = this.appModel.currentSession.get('sessionId');
@@ -80,10 +93,15 @@ define(function(require) {
         'update', this, {
           contentType: 'application/json',
           headers: { sessionId: sessionId },
-
           success: function() {
             // FIXME: Verify data contains a success message
-            self.appModel.favouriteTitles.add(self);
+            // FIXME: Verify an item with this Id doesn't already exist
+
+            if (! self.isFavourite()) {
+              self.appModel.favouriteTitles.add(self);
+              self.trigger('favouriteadded');
+              console.log('Added favourite');
+            }
           }
         });
     },
@@ -91,13 +109,25 @@ define(function(require) {
     removeFromFavourites: function() {
       var self = this;
       var sessionId = this.appModel.currentSession.get('sessionId');
+
+      // FIXME: Deletes the model?
       return BaseModel.prototype.sync(
         'delete', this, {
           contentType: 'application/json',
           headers: { sessionId: sessionId },
+
           success: function() {
             // FIXME: Verify data contains a success message
-            self.appModel.favouriteTitles.remove(self);
+            var theTitle = self
+                  .appModel
+                  .favouriteTitles
+                  .find(function(it) { return it.id === self.id; });
+
+            if (theTitle) {
+              self.appModel.favouriteTitles.remove(theTitle);
+              self.trigger('favouriteremoved');
+              console.log('Removed favourite');
+            }
           }
         });
     }
@@ -131,6 +161,7 @@ define(function(require) {
           self.getTitles();
         }
       );
+
     },
 
     parse: function(response, options) {
@@ -189,6 +220,7 @@ define(function(require) {
       return BaseModel.prototype.sync(
         'update', this, {
           dataType: 'json',
+          // FIXME: DO I still need this?
           data: JSON.stringify(this.attributes),
 
           contentType: 'application/json',
@@ -300,11 +332,11 @@ define(function(require) {
         appModel: this
       });
 
-      this.availableTitles = new AvailableTitlesCollection(false, {
+      this.favouriteTitles = new UserFavouriteTitlesCollection(false, {
         appModel: this
       });
 
-      this.favouriteTitles = new UserFavouriteTitlesCollection(false, {
+      this.availableTitles = new AvailableTitlesCollection(false, {
         appModel: this
       });
 
@@ -365,29 +397,57 @@ define(function(require) {
   var TitleView = Backbone.View.extend({
     tagName: 'tr',
 
-    template: _.template(ItemTemplate),
+    template: _.template(
+      '<td class="toggle">[F]</td>' +
+        '<td><%= name %></td>'
+    ),
 
-    deleteTitle: function(event) {
-      this.model.destroy();
+    isFavourite: function() {
+      return this.model.isFavourite();
+    },
+
+    toggleFavourite: function() {
+      if (this.isFavourite()) {
+        this.model.removeFromFavourites();
+      } else {
+        this.model.addToFavourites();
+      }
+      // FIXME: Add as an event binding
+      // this.render();
     },
 
     initialize: function() {
       var self = this;
 
-      this.model.on('remove', function() {
-        self.remove();
-      });
-    },
+      // this.model.on('remove', function() {
+      //   self.remove();
+      // });
 
-    events: {
-      "click .delete": "deleteTitle"
-    },
-
-    render: function() {
       this.$el.html(
         this.template(
           this.model.toJSON()
       ));
+
+      // FIXME: Move to TitleView?
+      this.model.appModel.favouriteTitles.on(
+        'add remove', function(model, collection) {
+          // console.log('favCha', arguments);
+          if (model.get('id') == self.model.get('id')) {
+            self.render();
+          }
+        });
+
+    },
+
+    events: {
+      "click .toggle": "toggleFavourite"
+    },
+
+    render: function() {
+      this.$el.toggleClass(
+        'favourite',
+        this.isFavourite()
+      );
       return this;
     }
   });
@@ -396,6 +456,40 @@ define(function(require) {
 
   // FIXME: Merge with AvailableTitlesCollection?
   var UserFavouriteTitlesCollection = BaseCollection.extend({
+    initialize: function() {
+      var self = this;
+
+      this.on('all', function(event, model, message) {
+        console.log('userFavouriteTitlesCollection', event, model, message);
+      });
+
+      // FIXME: Do I need this?
+      this.appModel.currentSession.on(
+        'change:userId', function() {
+          self.getTitles();
+        }
+      );
+    },
+
+    getTitles: function() {
+      var self = this;
+
+      console.log('Retrieved titles');
+      var sessionId = this.appModel.currentSession.get('sessionId');
+      return this.fetch({
+        headers: { sessionId: sessionId },
+        success: function() {
+
+          // FIXME: Move to Titles
+          var favouriteIds = self.models.map(function(it) {
+            return it.get('id');
+          });
+
+          // self.models.
+        }
+      });
+    },
+
     url: function() {
       var root = this.appModel.currentUser.url();
       return root + '/titles';
@@ -438,16 +532,10 @@ define(function(require) {
 
       // FIXME: Change to add?
       this.model.bind("sync", this.render, this);
-
-      // this.model.on("all", function(eventName){
-      //   console.log(eventName + ' was triggered!');
-      // });
     },
 
     render: function (eventName) {
-      // console.log('length', this.model.models.length);
       _.each(this.model.models, function (title) {
-        // console.log('adding', title);
 
         this.$el.append(
           new TitleView({model: title})
@@ -489,10 +577,9 @@ define(function(require) {
         self.$el.find('.error-message').html('');
       });
 
-      this.model.on("all", function(evenName) {
-        console.log(evenName);
+      this.on('all', function(event, model, message) {
+        console.log('signInPage', event, model, message);
       });
-
     },
 
     events: {

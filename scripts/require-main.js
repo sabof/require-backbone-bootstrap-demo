@@ -21,4 +21,9 @@ require.config({
 
 require(['app'], function() {
   // require(['test'], function() {});
+
+  window.appModel.currentSession.signIn(
+    { username: 'c', password: 'c'}
+  );
+
 });
