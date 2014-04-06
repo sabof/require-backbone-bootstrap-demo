@@ -3,15 +3,18 @@ define(function(require) {
   var BaseView = require('views/BaseView');
 
   return BaseView.extend({
+    li: 'li',
+
     events: {
-      "click .toggle": "toggleFavourite"
+      "click .favourite": "toggleFavourite"
     },
 
-    tagName: 'tr',
-
     template: _.template(
-      '<td class="toggle">[F]</td>' +
-        '<td><%= name %></td>'
+      '<button type="button" class="favourite btn btn-default btn-sm">' +
+        '<span class="glyphicon glyphicon-star"></span> Favourite' +
+        '</button>' +
+        '<h3><%= name %></h3>' +
+        '<div class="description"><%= description %></div>'
     ),
 
     isFavourite: function() {
@@ -19,15 +22,13 @@ define(function(require) {
     },
 
     toggleFavourite: function() {
+      this.$el.find('button').toggleClass('active');
+
       if (this.isFavourite()) {
         this.model.removeFromFavourites();
       } else {
         this.model.addToFavourites();
       }
-
-      // FIXME: Add as an event binding
-      // this.render();
-
     },
 
     initialize: function() {
@@ -47,8 +48,8 @@ define(function(require) {
     },
 
     render: function() {
-      this.$el.toggleClass(
-        'favourite',
+      this.$el.find('button').toggleClass(
+        'active',
         this.isFavourite()
       );
       return this;

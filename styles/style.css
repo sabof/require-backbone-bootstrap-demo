@@ -43,3 +43,47 @@ html {
 .control-label {
 	display: block;
 }
+
+#page-view-titles .btn {
+	float: right;
+}
+
+#page-view-titles .btn:hover {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+}
+
+#page-view-titles .btn:focus {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+}
+
+#page-view-titles .btn.active,
+#page-view-titles .btn:active,
+#page-view-titles .btn:active:focus {
+	background-color: #ebebeb;
+}
+
+.list .favourite {
+	display: none;
+}
+
+.list.show-favourites .favourite {
+	display: block;
+
+}
+
+.list {
+	padding-left: 0;
+}
+
+.list > div {
+	border-top: 1px solid #ccc;
+	padding: 10px 0;
+}
+
+.list h3 {
+	margin-top: 0;
+}
