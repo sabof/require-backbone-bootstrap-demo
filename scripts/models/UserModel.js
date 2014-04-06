@@ -1,5 +1,5 @@
 define(function(require) {
-  var BaseModel = require('model/BaseModel');
+  var BaseModel = require('models/BaseModel');
   var Backbone = require('backbone');
   var $ = require('jquery');
   var _ = require('underscore');
