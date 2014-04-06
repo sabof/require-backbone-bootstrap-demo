@@ -5,3 +5,37 @@
 html {
        overflow-y: scroll;
 }
+
+.container {
+	padding-top: 10px;
+	padding-bottom: 15px;
+}
+
+.tab-pane {
+	padding-top: 15px;
+}
+
+.success-message {
+	border: 1px solid #d9534f;
+	border-radius: 3px;
+	color: #d9534f;
+	background-color: #fdf7f7;
+}
+
+.success-messages, .error-messages {
+	padding: 5px;
+	margin-bottom: 10px;
+	border-radius: 4px;
+}
+
+.success-messages {
+	border: 1px solid #468847;
+	color: #468847;
+	background-color: #dff0d8;
+}
+
+.error-messages {
+	border: 1px solid #d9534f;
+	color: #d9534f;
+	background-color: #fdf7f7;
+}

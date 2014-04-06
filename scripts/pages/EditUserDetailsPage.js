@@ -3,6 +3,10 @@ define(function(require) {
   var $ = require('jquery');
 
   return BasePage.extend({
+    events: {
+      'click .submit' : 'submitOnClick'
+    },
+
     propertyToIdMap: {
       'password': 'user-details-password',
       'lastName': 'user-details-last-name',
@@ -61,10 +65,6 @@ define(function(require) {
       //   $('#user-details-first-name').val(value);
       // });
 
-    },
-
-    events: {
-      'click .submit' : 'submitOnClick'
     },
 
     submitOnClick: function(e) {

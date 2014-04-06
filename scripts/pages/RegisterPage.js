@@ -5,6 +5,7 @@ define(function(require) {
   return BasePage.extend({
     initialize: function() {
       var self = this;
+      BasePage.prototype.initialize.call(this);
 
       this.model.on("error invalid", function(model, error) {
         if (typeof error == 'object' && error.responseText) {
@@ -32,9 +33,6 @@ define(function(require) {
         password: $('#register-password').val(),
         phoneNumber: $('#register-phone-number').val()
       });
-
-      // FIXME: No-op?
-      return false;
     }
 
   });

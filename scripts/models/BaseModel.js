@@ -3,9 +3,9 @@ define(function(require) {
 
   return Backbone.Model.extend({
     extactServerError: function(error) {
-      var message;
-      // The response is not valid JSON, and sometimes even not valid JavaScript
-      message = error.responseText.substring(6,error.responseText.length - 3);
+      var response = error.responseText;
+      // The response is not valid JSON, and sometimes not valid JavaScript
+      var message = response.replace(/(^[^"]*")|("[^"]*$)/g, '');
       return message;
     },
 

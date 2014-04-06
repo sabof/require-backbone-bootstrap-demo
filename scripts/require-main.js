@@ -38,7 +38,8 @@ require([
   'pages/SignInPage',
   'pages/EditUserDetailsPage',
   'backbone',
-  'bootstrap'
+  'bootstrap',
+  'router'
 ], function(
   $,
   AppModel,
@@ -48,7 +49,8 @@ require([
   SignInPage,
   EditUserDetailsPage,
   Backbone,
-  ignore
+  ignore,
+  Router
 ) {
 
   var appModel = window.appModel = new AppModel();
@@ -70,96 +72,24 @@ require([
   });
 
   var signInPage = new SignInPage({
-    // FIXME: change id to page-sign-in
     el: '#page-signin',
     model: appModel.currentSession
   });
 
   var editUserDetailsPage = new EditUserDetailsPage({
-    // FIXME: change id to page-sign-in
     el: '#page-user-details',
     model: appModel.currentUser
   });
 
+  var router = new Router({
+    appModel: appModel
+  });
+
+  Backbone.history.start();
+
   window.appModel.currentSession.signIn(
     { username: 'testuser1', password: 'password'}
   );
-
-  // FIXME: Move to a separate file
-  // FIXME: Combine with AppModel?
-
-  // Router
-  var AppRouter = Backbone.Router.extend({
-    // FIXME: Temporary
-
-    constructor: function(opts) {
-      if (opts && opts.appModel) {
-        this.appModel = opts.appModel;
-        delete opts.appModel;
-      }
-
-      Backbone.Router.apply(this, arguments);
-    },
-
-    // appModel: appModel,
-    initialize: function() {
-      var self = this;
-      this.route(/(.*)/, 'mainRoute');
-      this.appModel.currentSession.on('signin signout', function() {
-        self.normalizePage();
-      });
-    },
-
-    mainRoute: function(name) {
-      if (this.allowedPages().indexOf(name) === -1) {
-        window.location = '#' + this.defaultPage();
-        return;
-      }
-      this.setPage(name);
-    },
-
-    normalizePage: function() {
-      var name = this.currentPage();
-      if (this.allowedPages().indexOf(name) === -1) {
-        window.location = '#' + this.defaultPage();
-      }
-    },
-
-    setPage: function(name) {
-      $('a[href=#' + name + ']').tab('show');
-    },
-
-    currentPage: function() {
-      return $('#pages .tab-pane.active').prop('id');
-    },
-
-    allowedPages: function() {
-      if (this.appModel.currentSession.isSignedIn()) {
-        return [
-          'page-view-titles',
-          'page-user-details'
-        ];
-      } else {
-        return [
-          'page-signin',
-          'page-view-titles',
-          'page-register',
-        ];
-      }
-    },
-
-    defaultPage: function() {
-      return this.allowedPages()[0];
-    },
-
-  });
-
-  var router = new AppRouter({
-    appModel: appModel
-  });
-  // router.appModel = appModel;
-
-  Backbone.history.start();
 
 });
 
@@ -171,6 +101,7 @@ require([
 
 // Nice to have
 
+// FIXME: Change messages to <ul>
 // FIXME: How much do TitleModels need to know about the collections?
 // FIXME: Consistency: prefer events when possible
 // FIXME: Show username when signedIn?
@@ -178,6 +109,7 @@ require([
 // FIXME: Change "singedin" to "signin"
 // FIXME: Add favourite immediately
 // FIXME: Set cookie upon logging-in?
+// FIXME: Set .error style on incorrect inputs
 
 // Won't fix
 
