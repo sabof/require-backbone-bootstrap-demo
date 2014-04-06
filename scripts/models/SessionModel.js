@@ -53,6 +53,7 @@ define(function(require) {
         },
 
         error: function(model, error) {
+          // debugger;
           var messages = [{
             type: 'error',
             message: self.extactServerError(error)

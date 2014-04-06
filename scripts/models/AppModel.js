@@ -10,7 +10,17 @@ define(function(require) {
       return 'http://217.18.25.29:10070/';
     },
 
+    registerPage: function(id, page) {
+      this.pagesMap[id] = page;
+    },
+
+    getPageById: function(id) {
+      return this.pagesMap[id];
+    },
+
     initialize: function() {
+      this.pagesMap = {};
+
       this.currentSession = new SessionModel(false, {
         appModel: this
       });

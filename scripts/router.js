@@ -24,6 +24,8 @@ define(function(require) {
         window.location = '#' + this.defaultPage();
         return;
       }
+      var pageView = this.appModel.getPageById(name);
+      pageView.trigger('beforeshow');
       this.setPage(name);
     },
 

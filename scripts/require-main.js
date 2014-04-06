@@ -37,6 +37,7 @@ require([
   'pages/RegisterPage',
   'pages/SignInPage',
   'pages/EditUserDetailsPage',
+  'pages/AvailableTitlesPage',
   'backbone',
   'bootstrap',
   'router'
@@ -48,8 +49,9 @@ require([
   RegisterPage,
   SignInPage,
   EditUserDetailsPage,
+  AvailableTitlesPage,
   Backbone,
-  ignore,
+  _Bootstrap,
   Router
 ) {
 
@@ -60,26 +62,37 @@ require([
     model: appModel
   });
 
-  var list = window.list = new AvailableTitlesView({
-    model: appModel.availableTitles
-  });
+  appModel.registerPage(
+    'page-view-titles',
+    new AvailableTitlesPage({
+      el: '#page-view-titles',
+      model: appModel.availableTitles
+    })
+  );
 
-  $('#page-view-titles').html(list.render().el);
+  appModel.registerPage(
+    'page-register',
+    new RegisterPage({
+      el: '#page-register',
+      model: appModel.currentUser
+    })
+  );
 
-  var registerPage = new RegisterPage({
-    el: '#page-register',
-    model: appModel.currentUser
-  });
+  appModel.registerPage(
+    'page-signin',
+    new SignInPage({
+      el: '#page-signin',
+      model: appModel.currentSession
+    })
+  );
 
-  var signInPage = new SignInPage({
-    el: '#page-signin',
-    model: appModel.currentSession
-  });
-
-  var editUserDetailsPage = new EditUserDetailsPage({
-    el: '#page-user-details',
-    model: appModel.currentUser
-  });
+  appModel.registerPage(
+    'page-user-details',
+    new EditUserDetailsPage({
+      el: '#page-user-details',
+      model: appModel.currentUser
+    })
+  );
 
   var router = new Router({
     appModel: appModel
@@ -95,21 +108,21 @@ require([
 
 // FIXME: Add "Success" messages;
 // FIXME: Style lists
-// FIXME: Create page for the titles
 // FIXME: Fix input types
-// FIXME: Generalize server messages to html
 
 // Nice to have
 
 // FIXME: Change messages to <ul>
-// FIXME: How much do TitleModels need to know about the collections?
-// FIXME: Consistency: prefer events when possible
 // FIXME: Show username when signedIn?
 // FIXME: Namespace events
-// FIXME: Change "singedin" to "signin"
 // FIXME: Add favourite immediately
 // FIXME: Set cookie upon logging-in?
 // FIXME: Set .error style on incorrect inputs
+
+// General
+
+// FIXME: How much do TitleModels need to know about the collections?
+// FIXME: Consistency: prefer events when possible
 
 // Won't fix
 
@@ -118,6 +131,9 @@ require([
 
 // Fixed
 
+// FIXED: Change "singedin" to "signin"
+// FIXED: Generalize server messages to html
+// FIXED: Create page for the titles
 // FIXED: Add submit to "profile-edit"
 // FIXED: Change page on sign in/out
 // FIXED: Add routing

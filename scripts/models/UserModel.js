@@ -45,7 +45,22 @@ define(function(require) {
           url: this.appModel.url() + 'register/' + attrs.username,
           forceMethod: 'update',
           success: function() {
+            var messages = [{
+              type: 'success',
+              message: "The registration was successful"
+            }];
+            self.trigger('message', self, messages);
+
             self.appModel.currentSession.signIn(attrs);
+          },
+
+          error: function(model, error) {
+            // debugger;
+            var messages = [{
+              type: 'error',
+              message: self.extactServerError(error)
+            }];
+            self.trigger('message', self, messages);
           }
         });
     },

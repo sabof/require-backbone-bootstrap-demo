@@ -19,6 +19,11 @@ define(function(require) {
           self.setMessages(messages);
         }
       });
+
+      this.on('beforeshow', function() {
+        self.setMessages([]);
+      });
+
     },
 
     setMessages: function(messages) {
