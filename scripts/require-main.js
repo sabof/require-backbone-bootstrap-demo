@@ -97,16 +97,33 @@ require([
 
   // Router
   var AppRouter = Backbone.Router.extend({
+    // FIXME: Temporary
+
+    appModel: appModel,
     initialize: function() {
+      var self = this;
       this.route(/(.*)/, 'mainRoute');
+      this.appModel.currentSession.on('signedin signedout', function() {
+        self.normalizePage();
+      });
     },
 
     mainRoute: function(name) {
-      // console.log('route', name);
-      var allowed = this.allowedPages();
-      if (allowed.indexOf(name) === -1) {
-        name = this.defaultPage();
+      if (this.allowedPages().indexOf(name) === -1) {
+        window.location = '#' + this.defaultPage();
+        return;
       }
+      this.setPage(name);
+    },
+
+    normalizePage: function() {
+      var name = this.currentPage();
+      if (this.allowedPages().indexOf(name) === -1) {
+        window.location = '#' + this.defaultPage();
+      }
+    },
+
+    setPage: function(name) {
       $('a[href=#' + name + ']').tab('show');
     },
 
@@ -136,7 +153,7 @@ require([
   });
 
   var router = new AppRouter();
-  router.appModel = appModel;
+  // router.appModel = appModel;
 
   Backbone.history.start();
 
