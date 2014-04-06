@@ -1,4 +1,5 @@
 /* global require */
+
 require.config({
   shim: {
     'backbone': {
@@ -8,20 +9,24 @@ require.config({
 
     'underscore': {
       exports: '_'
+    },
+
+    'bootstrap': {
+      deps: ['jquery-make-global'],
     }
   },
 
   paths: {
     underscore: 'libs/underscore',
     backbone: 'libs/backbone',
+    bootstrap: '../bootstrap/js/bootstrap',
     jquery: 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min',
     text: 'libs/text'
   }
 });
 
-require(['jquery'], function($) {
-  window.$ = $;
-  require(['bootstrap/js/bootstrap.js']);
+define('jquery-make-global',['jquery'],function($){
+  window.jQuery = window.$ = $;
 });
 
 require([
@@ -33,6 +38,7 @@ require([
   'pages/SignInPage',
   'pages/EditUserDetailsPage',
   'backbone',
+  'bootstrap'
 ], function(
   $,
   AppModel,
@@ -41,7 +47,8 @@ require([
   RegisterPage,
   SignInPage,
   EditUserDetailsPage,
-  Backbone
+  Backbone,
+  ignore
 ) {
   // require(['test'], function() {});
 
@@ -91,11 +98,13 @@ require([
 
     routes:{
       "":"list",
-      "view-titles":"wineDetails"
+      "view-titles":"viewTitles"
     },
 
     list: function () {
-      $('#page-view-titles').tab('show');
+      console.log('list ran');
+      // $('a[href=#page-view-titles]').tab('show');
+      // $('#page-view-titles').tab('show');
       // this.wineList = new WineCollection();
       // this.wineListView = new WineListView({model:this.wineList});
       // this.wineList.fetch();
@@ -103,13 +112,17 @@ require([
     },
 
     viewTitles: function (id) {
-      this.wine = this.wineList.get(id);
-      if (appModel.wineView) appModel.wineView.close();
-      this.wineView = new WineView({model:this.wine});
-      $('#content').html(this.wineView.render().el);
+      $('a[href=#page-view-titles]').tab('show');
+      // this.wine = this.wineList.get(id);
+      // if (appModel.wineView) appModel.wineView.close();
+      // this.wineView = new WineView({model:this.wine});
+      // $('#content').html(this.wineView.render().el);
     }
 
   });
+
+  var app = new AppRouter();
+  Backbone.history.start();
 
 });
 
