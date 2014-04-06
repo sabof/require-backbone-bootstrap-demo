@@ -15,7 +15,6 @@ define(function(require) {
       // FIXME: Change 'message' to 'notification'
       this.model.on('message', function(model, messages) {
         // FIXME: Set cookie?
-        console.log('tried to set message', arguments);
         if (messages) {
           self.setMessages(messages);
         }

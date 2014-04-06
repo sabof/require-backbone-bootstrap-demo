@@ -1,7 +1,7 @@
 define(function(require) {
   var Backbone = require('backbone');
 
-   return Backbone.Router.extend({
+  return Backbone.Router.extend({
     constructor: function(opts) {
       if (opts && opts.appModel) {
         this.appModel = opts.appModel;
@@ -11,7 +11,6 @@ define(function(require) {
       Backbone.Router.apply(this, arguments);
     },
 
-    // appModel: appModel,
     initialize: function() {
       var self = this;
       this.route(/(.*)/, 'mainRoute');
@@ -60,7 +59,6 @@ define(function(require) {
 
     defaultPage: function() {
       return this.allowedPages()[0];
-    },
-
-   });
+    }
+  });
 });

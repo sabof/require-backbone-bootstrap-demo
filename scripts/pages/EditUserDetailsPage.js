@@ -46,10 +46,10 @@ define(function(require) {
         self.model.on('change:' + property, function(model, value) {
           var elem = document.getElementById(id);
           if (elem) {
-          elem.value = value;
+            elem.value = value;
           } else {
             console.log('Couldn\'t find', id);
-}
+          }
         });
       });
 
