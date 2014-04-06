@@ -32,10 +32,18 @@ define(function(require) {
       });
 
       this.appModel.currentSession.on(
-        'change:userId', function() {
+        'signin', function() {
           self.getUserDetails();
         }
       );
+
+      this.appModel.currentSession.on(
+        'signout', function() {
+          console.log('clearingUser');
+          self.clear().set(self.defaults);
+        }
+      );
+
     },
 
     register: function(attrs) {
@@ -67,7 +75,6 @@ define(function(require) {
 
     putUserDetails: function(attrs) {
       var self = this;
-
       if (arguments.length !== 1) {
         throw new Error(
           'Wrong number of arguments. Expected 1, but got ' +
@@ -127,6 +134,7 @@ define(function(require) {
         });
 
       return this.fetch(options);
+
     },
 
     validate: function(attrs) {
@@ -136,22 +144,7 @@ define(function(require) {
         errors.push({
           type: 'error',
           property: 'username',
-          message: 'Username is invalid'
-        });
-      }
-
-      if ( ! attrs.firstName ) {
-        errors.push({
-          type: 'error',
-          message: 'First name is invalid'
-        });
-      }
-
-      if ( ! attrs.lastName ) {
-        errors.push({
-          type: 'error',
-          property: 'lastName',
-          message: 'Last name is invalid'
+          message: 'The username is mandatory'
         });
       }
 
@@ -159,17 +152,32 @@ define(function(require) {
         errors.push({
           type: 'error',
           property: 'password',
-          message:  'Password is invalid'
+          message:  'The password is mandatory'
         });
       }
 
-      if ( ! attrs.phoneNumber ) {
-        errors.push({
-          type: 'error',
-          property: 'phoneNumber',
-          message: 'Phone number is invalid'
-        });
-      }
+      // if ( ! attrs.firstName ) {
+      //   errors.push({
+      //     type: 'error',
+      //     message: 'First name is invalid'
+      //   });
+      // }
+
+      // if ( ! attrs.lastName ) {
+      //   errors.push({
+      //     type: 'error',
+      //     property: 'lastName',
+      //     message: 'Last name is invalid'
+      //   });
+      // }
+
+      // if ( ! attrs.phoneNumber ) {
+      //   errors.push({
+      //     type: 'error',
+      //     property: 'phoneNumber',
+      //     message: 'Phone number is invalid'
+      //   });
+      // }
 
       if (errors.length) {
         return errors;

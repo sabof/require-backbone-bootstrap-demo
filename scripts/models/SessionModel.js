@@ -17,19 +17,19 @@ define(function(require) {
 
       this.on('change', this.trigger.bind(this, 'message', this, []));
 
-      if (! attrs.username) {
+      if ( ! attrs.username ) {
         errors.push({
           type: 'error',
           property: 'username',
-          message: 'Username is invalid'
+          message: 'The username is mandatory'
         });
       }
 
-      if (! attrs.password) {
+      if ( ! attrs.password ) {
         errors.push({
           type: 'error',
           property: 'password',
-          message:  'Password is invalid'
+          message:  'The password is mandatory'
         });
       }
 
@@ -59,7 +59,7 @@ define(function(require) {
             message: self.extactServerError(error)
           }];
 
-          self.trigger('signin message', self, messages);
+          self.trigger('message', self, messages);
         }
 
       });
