@@ -75,6 +75,8 @@ define(function(require) {
         map[property] = document.getElementById(id).value;
       });
 
+      map.age = Number(map.age) || 0;
+      // map.age = Number(map.age);
       this.model.putUserDetails(map);
 
       // FIXME: No-op?
