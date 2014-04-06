@@ -91,7 +91,7 @@ require([
   );
 
   new WrapperView({
-    el: '#main-navigation',
+    el: '.container',
     model: appModel
   });
 
@@ -107,13 +107,10 @@ require([
 
 });
 
-// FIXME: Style lists
-
 // Nice to have
 
 // FIXME: Better validation rules
 // FIXME: Support chrome's auto-fill
-// FIXME: Change messages to <ul>
 // FIXME: Show username when signedIn?
 // FIXME: Namespace events
 // FIXME: Add favourite immediately
@@ -132,6 +129,8 @@ require([
 
 // Fixed
 
+// FIXED: Change messages to <ul>
+// FIXED: Style lists
 // FIXED: Fix input types
 // FIXED: Add "Success" messages;
 // FIXED: Change "singedin" to "signin"

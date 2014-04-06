@@ -32,18 +32,25 @@ define(function(require) {
       var $error = this.$el.find('.error-messages');
       var $success = this.$el.find('.success-messages');
 
+      this.$el.find('.error-messages, .success-messages')
+        .empty();
+
       if (messages.error) {
         text = _.pluck(messages.error, 'message')
-          .join('<br/>');
-        $error.show().html(text);
+          .forEach(function(text) {
+            $error.append($('<li/>').html(text));
+          });
+        $error.show();
       } else {
         $error.hide();
       }
 
       if (messages.success) {
         text = _.pluck(messages.success, 'message')
-          .join('<br/>');
-        $success.show().html(text);
+          .forEach(function(text) {
+            $success.append($('<li/>').html(text));
+          });
+        $success.show();
       } else {
         $success.hide();
       }

@@ -11,7 +11,7 @@ define(function(require) {
       );
 
       this.render();
-      this.$el.show();
+      var navbar = this.$el.find('#main-navigation').show();
     },
 
     events: {
@@ -24,19 +24,22 @@ define(function(require) {
     },
 
     render: function() {
-      this.$el.find('li').show();
+      var navbar = this.$el.find('#main-navigation');
+
+      navbar.find('li').show();
 
       if (this.model.currentSession.isSignedIn()) {
-        this.$el
+        navbar
           .find('a[href=#page-signin], a[href=#page-register]')
           .parent()
           .hide();
       } else {
-        this.$el
+        navbar
           .find('a[href=#page-user-details], #button-signout')
           .parent()
           .hide();
       }
+
     }
 
   });
