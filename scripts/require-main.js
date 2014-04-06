@@ -92,7 +92,16 @@ require([
   var AppRouter = Backbone.Router.extend({
     // FIXME: Temporary
 
-    appModel: appModel,
+    constructor: function(opts) {
+      if (opts && opts.appModel) {
+        this.appModel = opts.appModel;
+        delete opts.appModel;
+      }
+
+      Backbone.Router.apply(this, arguments);
+    },
+
+    // appModel: appModel,
     initialize: function() {
       var self = this;
       this.route(/(.*)/, 'mainRoute');
@@ -145,7 +154,9 @@ require([
 
   });
 
-  var router = new AppRouter();
+  var router = new AppRouter({
+    appModel: appModel
+  });
   // router.appModel = appModel;
 
   Backbone.history.start();
@@ -153,18 +164,27 @@ require([
 });
 
 // FIXME: Add "Success" messages;
-// FIXME: Show username when signedIn?
-// FIXME: Consistency: prefer events when possible
-// FIXME: Add sorting
-// FIXME: Join sing-in and register pages
-// FIXME: Namespace events
 // FIXME: Style lists
 // FIXME: Create page for the titles
 // FIXME: Fix input types
-// FIXME: Change "singedin" to "signin"
+// FIXME: Generalize server messages to html
+
+// Nice to have
+
 // FIXME: How much do TitleModels need to know about the collections?
+// FIXME: Consistency: prefer events when possible
+// FIXME: Show username when signedIn?
+// FIXME: Namespace events
+// FIXME: Change "singedin" to "signin"
 // FIXME: Add favourite immediately
 // FIXME: Set cookie upon logging-in?
+
+// Won't fix
+
+// FIXME: Join sing-in and register pages
+// FIXME: Add sorting
+
+// Fixed
 
 // FIXED: Add submit to "profile-edit"
 // FIXED: Change page on sign in/out

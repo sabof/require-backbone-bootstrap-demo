@@ -23,6 +23,21 @@ define(function(require) {
       return this.appModel.url() + 'profile/' + userId;
     },
 
+    initialize: function() {
+      var self = this;
+
+      this.on('change', this.trigger.bind(this, 'message', this, []));
+      this.on('invalid', function(model, messages) {
+        self.trigger('message', self, messages);
+      });
+
+      this.appModel.currentSession.on(
+        'change:userId', function() {
+          self.getUserDetails();
+        }
+      );
+    },
+
     register: function(attrs) {
       var self = this;
       return this.save(
@@ -36,6 +51,8 @@ define(function(require) {
     },
 
     putUserDetails: function(attrs) {
+      var self = this;
+
       if (arguments.length !== 1) {
         throw new Error(
           'Wrong number of arguments. Expected 1, but got ' +
@@ -47,6 +64,7 @@ define(function(require) {
         // FIXME: Trigger error event
         return;
       }
+
       if (! this.set(attrs, {validate: true})) {
         return;
       }
@@ -55,12 +73,27 @@ define(function(require) {
 
       return BaseModel.prototype.sync(
         'update', this, {
-          dataType: 'json',
-          // FIXME: DO I still need this?
           data: JSON.stringify(this.attributes),
-
           contentType: 'application/json',
-          headers: { sessionId: sessionId },
+          headers: {
+            sessionId: sessionId,
+          },
+
+          success: function() {
+            var messages = [{
+              type: 'success',
+              message: "The details where sucessfully updated"
+            }];
+            self.trigger('message', self, messages);
+          },
+
+          error: function(error) {
+            var messages = [{
+              type: 'error',
+              message: self.extactServerError(error)
+            }];
+            self.trigger('message', self, messages);
+          }
         }
       );
     },
@@ -126,15 +159,6 @@ define(function(require) {
       if (errors.length) {
         return errors;
       }
-    },
-
-    initialize: function() {
-      var self = this;
-      this.appModel.currentSession.on(
-        'change:userId', function() {
-          self.getUserDetails();
-        }
-      );
     },
 
     // FIXME: Move to base class?

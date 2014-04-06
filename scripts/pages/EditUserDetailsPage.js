@@ -15,6 +15,7 @@ define(function(require) {
 
     initialize: function() {
       var self = this;
+      BasePage.prototype.initialize.call(this);
 
       this.model.on("error invalid", function(model, error) {
         if (typeof error == 'object' && error.responseText) {
@@ -76,11 +77,7 @@ define(function(require) {
       });
 
       map.age = Number(map.age) || 0;
-      // map.age = Number(map.age);
       this.model.putUserDetails(map);
-
-      // FIXME: No-op?
-      return false;
     }
 
   });

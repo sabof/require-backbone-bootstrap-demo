@@ -55,7 +55,7 @@ define(function(require) {
         error: function(model, error) {
           var messages = [{
             type: 'error',
-            message: (new Function('return ' + error.responseText))().msg
+            message: this.extactServerError(error)
           }];
 
           self.trigger('signin message', self, messages);
