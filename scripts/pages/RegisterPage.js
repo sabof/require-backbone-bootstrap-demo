@@ -1,5 +1,6 @@
 define(function(require) {
   var BasePage = require('pages/BasePage');
+  var $ = require('jquery');
 
   return BasePage.extend({
     initialize: function() {

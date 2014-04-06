@@ -25,14 +25,16 @@ require([
   'views/AvailableTitlesView',
   'jquery',
   'pages/RegisterPage',
-  'pages/SignInPage'
+  'pages/SignInPage',
+  'pages/EditUserDetailsPage'
 ], function(
   AppModel,
   WrapperView,
   AvailableTitlesView,
   $,
   RegisterPage,
-  SignInPage
+  SignInPage,
+  EditUserDetailsPage
 ) {
   // require(['test'], function() {});
 
@@ -66,12 +68,17 @@ require([
     model: appModel.currentSession
   });
 
+  var editUserDetailsPage = new EditUserDetailsPage({
+    // FIXME: change id to page-sign-in
+    el: '#page-user-details',
+    model: appModel.currentUser
+  });
+
   window.appModel.currentSession.signIn(
     { username: 'c', password: 'c'}
   );
 
-}
-       );
+});
 
 // // Router
 // var AppRouter = Backbone.Router.extend({
@@ -102,9 +109,17 @@ require([
 // });
 
 // FIXME: Add "Success" messages;
-// FIXME: Make tabbar sections dynamic
 // FIXME: Show username when signedIn?
 // FIXME: Consistency: prefer events when possible
 // FIXME: Add sorting
-// FIXME: Add sign-out
 // FIXME: Add submit to "profile-edit"
+// FIXME: Sign-in on registration
+// FIXME: Join sing-in and register pages
+// FIXME: Namespace events
+// FIXME: Style lists
+// FIXME: Change page on sign in/out
+// FIXME: Create page for the titles
+
+// FIXED: Hide menu intially
+// FIXED: Add sign-out
+// FIXED: Make tabbar sections dynamic

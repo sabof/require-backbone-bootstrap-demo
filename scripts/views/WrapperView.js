@@ -11,6 +11,7 @@ define(function(require) {
       );
 
       this.render();
+      this.$el.show();
     },
 
     events: {
