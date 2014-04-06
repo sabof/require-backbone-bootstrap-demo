@@ -28,7 +28,7 @@ define(function(require) {
         var id = map[prop];
         document.getElementById(id).value = '';
       });
-      return map;
+      this.setMessages([]);
     },
 
     getValues: function() {
@@ -40,7 +40,30 @@ define(function(require) {
       return map;
     },
 
+    setErrorStyles: function(messages) {
+      this.$el.find('.has-error').removeClass('has-error');
+      var map = this.propertyToIdMap;
+      var errorFields = _.chain(messages)
+            .where({type: 'error'})
+            .pluck('property')
+            .value();
+
+      errorFields.forEach(function(property) {
+        var id = map[property];
+        $(document.getElementById(id))
+          .closest('.form-group')
+          .addClass('has-error');
+      });
+
+      if (errorFields.length) {
+        $(document.getElementById(map[errorFields[0]]))
+          .focus();
+      }
+    },
+
+    // FIXME: Rename?
     setMessages: function(messages) {
+      this.setErrorStyles(messages);
       messages = _.groupBy(messages, 'type');
       var text = '';
       var $error = this.$el.find('.error-messages');
