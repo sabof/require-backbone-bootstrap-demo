@@ -2,6 +2,7 @@ define(function(require) {
   var BaseModel = require('model/BaseModel');
   var Backbone = require('backbone');
   var $ = require('jquery');
+  var _ = require('underscore');
 
   return BaseModel.extend({
     defaults: function() {
@@ -75,6 +76,7 @@ define(function(require) {
 
     putUserDetails: function(attrs) {
       var self = this;
+
       if (arguments.length !== 1) {
         throw new Error(
           'Wrong number of arguments. Expected 1, but got ' +
@@ -156,28 +158,14 @@ define(function(require) {
         });
       }
 
-      // if ( ! attrs.firstName ) {
-      //   errors.push({
-      //     type: 'error',
-      //     message: 'First name is invalid'
-      //   });
-      // }
-
-      // if ( ! attrs.lastName ) {
-      //   errors.push({
-      //     type: 'error',
-      //     property: 'lastName',
-      //     message: 'Last name is invalid'
-      //   });
-      // }
-
-      // if ( ! attrs.phoneNumber ) {
-      //   errors.push({
-      //     type: 'error',
-      //     property: 'phoneNumber',
-      //     message: 'Phone number is invalid'
-      //   });
-      // }
+      if ( attrs.phoneNumber &&
+           ! /^[ 1-9-]+$/.test(attrs.phoneNumber)) {
+        errors.push({
+          type: 'error',
+          property: 'phoneNumber',
+          message: 'Phone number is invalid'
+        });
+      }
 
       if (errors.length) {
         return errors;
