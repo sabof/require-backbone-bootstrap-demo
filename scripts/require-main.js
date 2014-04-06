@@ -50,7 +50,6 @@ require([
   Backbone,
   ignore
 ) {
-  // require(['test'], function() {});
 
   var appModel = window.appModel = new AppModel();
 
@@ -58,12 +57,6 @@ require([
     el: '#main-navigation',
     model: appModel
   });
-
-  // var availableTitlesCollection =
-  //     window.availableTitlesCollection =
-  //     new AvailableTitlesCollection(false, {
-  //   appModel: appModel
-  // });
 
   var list = window.list = new AvailableTitlesView({
     model: appModel.availableTitles
@@ -163,14 +156,16 @@ require([
 // FIXME: Show username when signedIn?
 // FIXME: Consistency: prefer events when possible
 // FIXME: Add sorting
-// FIXME: Add submit to "profile-edit"
 // FIXME: Join sing-in and register pages
 // FIXME: Namespace events
 // FIXME: Style lists
-// FIXME: Change page on sign in/out
 // FIXME: Create page for the titles
-// FIXME: Add routing
+// FIXME: Fix input types
+// FIXME: Change "singedin" to "signin"
 
+// FIXED: Add submit to "profile-edit"
+// FIXED: Change page on sign in/out
+// FIXED: Add routing
 // FIXED: Sign-in on registration
 // FIXED: Hide menu intially
 // FIXED: Add sign-out
