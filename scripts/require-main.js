@@ -162,6 +162,7 @@ require([
 // FIXME: Create page for the titles
 // FIXME: Fix input types
 // FIXME: Change "singedin" to "signin"
+// FIXME: How much do TitleModels need to know about the collections?
 
 // FIXED: Add submit to "profile-edit"
 // FIXED: Change page on sign in/out
