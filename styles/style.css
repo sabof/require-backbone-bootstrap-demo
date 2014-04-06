@@ -39,3 +39,7 @@ html {
 	color: #d9534f;
 	background-color: #fdf7f7;
 }
+
+.control-label {
+	display: block;
+}

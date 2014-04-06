@@ -54,13 +54,9 @@ require([
   _Bootstrap,
   Router
 ) {
+  /* jshint nonew: false */
 
   var appModel = window.appModel = new AppModel();
-
-  var wrapperModel = new WrapperView({
-    el: '#main-navigation',
-    model: appModel
-  });
 
   appModel.registerPage(
     'page-view-titles',
@@ -94,7 +90,12 @@ require([
     })
   );
 
-  var router = new Router({
+  new WrapperView({
+    el: '#main-navigation',
+    model: appModel
+  });
+
+  new Router({
     appModel: appModel
   });
 
@@ -106,12 +107,12 @@ require([
 
 });
 
-// FIXME: Add "Success" messages;
 // FIXME: Style lists
-// FIXME: Fix input types
 
 // Nice to have
 
+// FIXME: Better validation rules
+// FIXME: Support chrome's auto-fill
 // FIXME: Change messages to <ul>
 // FIXME: Show username when signedIn?
 // FIXME: Namespace events
@@ -131,6 +132,8 @@ require([
 
 // Fixed
 
+// FIXED: Fix input types
+// FIXED: Add "Success" messages;
 // FIXED: Change "singedin" to "signin"
 // FIXED: Generalize server messages to html
 // FIXED: Create page for the titles

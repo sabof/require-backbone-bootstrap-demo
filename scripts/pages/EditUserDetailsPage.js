@@ -42,17 +42,15 @@ define(function(require) {
         });
       });
 
-      // this.model.on('change:password', function(model, value) {
-      //   $('#user-details-password').val(value);
-      // });
+      this.model.on('change:genderIsFemale', function(model, value) {
+        var radios = $('input[name=user-details-sex]');
 
-      // this.model.on('change:lastName', function(model, value) {
-      //   $('#user-details-last-name').val(value);
-      // });
-
-      // this.model.on('change:firstName', function(model, value) {
-      //   $('#user-details-first-name').val(value);
-      // });
+        if (value) {
+          radios.filter('[value=female]').prop('checked', 'checked');
+        } else {
+          radios.filter('[value=male]').prop('checked', 'checked');
+        }
+      });
 
     },
 
@@ -65,7 +63,9 @@ define(function(require) {
         map[property] = document.getElementById(id).value;
       });
 
+      map.genderIsFemale = $('input[name=user-details-sex]:checked').val() === 'female';
       map.age = Number(map.age) || 0;
+
       this.model.putUserDetails(map);
     }
 

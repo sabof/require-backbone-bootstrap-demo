@@ -60,6 +60,14 @@
             </div>
 
             <div class="form-group">
+              <label for="register-password" class="control-label">
+                Password
+              </label>
+              <input id="register-password" class="form-control"
+                     type="password" />
+            </div>
+
+            <div class="form-group">
               <label for="register-first-name" class="control-label">
                 First name
               </label>
@@ -77,19 +85,12 @@
               <label for="register-phone-number" class="control-label">
                 Phone number
               </label>
-              <input id="register-phone-number" class="form-control"/>
-            </div>
-
-            <div class="form-group">
-              <label for="register-password" class="control-label">
-                Password
-              </label>
-              <input id="register-password" class="form-control"/>
+              <input id="register-phone-number" class="form-control"
+                     type="tel" />
             </div>
 
             <input type="submit" value="Register"
                    class="submit btn btn-default" />
-
           </form>
         </div>
 
@@ -109,7 +110,8 @@
               <label for="user-details-password" class="control-label">
                 Password
               </label>
-              <input id="user-details-password" class="form-control"/>
+              <input id="user-details-password" class="form-control"
+                     type="password" />
             </div>
 
             <div class="form-group">
@@ -127,25 +129,37 @@
             </div>
 
             <div class="form-group">
-              <label for="user-details-age" class="control-label">
-                Age
-              </label>
-              <input id="user-details-age" class="form-control"/>
-            </div>
-
-            <div class="form-group">
               <label for="user-details-phone-number" class="control-label">
                 Phone number
               </label>
-              <input id="user-details-phone-number" class="form-control"/>
+              <input id="user-details-phone-number" class="form-control"
+                     type="tel" />
+            </div>
+
+            <div class="form-group">
+              <label for="user-details-age" class="control-label">
+                Age
+              </label>
+              <input id="user-details-age" class="form-control" type="number" />
             </div>
 
             <!-- FIXME: Convert to checkbox -->
             <div class="form-group">
-              <label for="user-details-is-female" class="control-label">
+              <label class="control-label">
                 Sex
               </label>
-              <input id="user-details-is-female" class="form-control"/>
+
+              <label class="radio-inline">
+                <input type="radio" id="user-details-sex"
+                       name="user-details-sex" value="male"
+                       checked="checked"> Male
+              </label>
+
+              <label class="radio-inline">
+                <input type="radio" id="user-details-sex"
+                       name="user-details-sex" value="female"> Female
+              </label>
+
             </div>
 
             <!-- FIXME: Convert to textbox -->
@@ -153,13 +167,14 @@
               <label for="user-details-notes" class="control-label">
                 Notes
               </label>
-              <input id="user-details-notes" class="form-control"/>
+              <textarea name="" id="user-details-notes" rows="5" cols="80" class="form-control"></textarea>
             </div>
 
             <input type="submit" value="Update details"
                    class="submit btn btn-default"/>
           </form>
         </div>
+
         <div class="tab-pane" id="page-view-titles"></div>
       </div>
 
