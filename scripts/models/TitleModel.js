@@ -42,7 +42,7 @@ define(function(require) {
 
             if (! self.isFavourite()) {
               self.appModel.favouriteTitles.add(self);
-              self.trigger('favouriteadded');
+              self.trigger('favourite:added');
             }
           }
         });
@@ -66,7 +66,7 @@ define(function(require) {
 
             if (theTitle) {
               self.appModel.favouriteTitles.remove(theTitle);
-              self.trigger('favouriteremoved');
+              self.trigger('favourite:removed');
             }
           }
         });

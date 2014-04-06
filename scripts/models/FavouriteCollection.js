@@ -19,11 +19,11 @@ define(function(require) {
       var self = this;
 
       this.on('remove', function(model) {
-        this.getTwin(model).trigger('favouriteremoved');
+        this.getTwin(model).trigger('favourite:removed');
       });
 
       this.on('add', function(model) {
-        this.getTwin(model).trigger('favouriteadded');
+        this.getTwin(model).trigger('favourite:added');
       });
 
       // FIXME: Do I need this?
@@ -34,7 +34,7 @@ define(function(require) {
           } else {
             var models = self.map(self.getTwin, self);
             self.reset([]);
-            _.invoke(models, 'trigger', 'favouriteremoved');
+            _.invoke(models, 'trigger', 'favourite:removed');
           }
         }
       );

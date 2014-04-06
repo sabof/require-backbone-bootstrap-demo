@@ -35,7 +35,7 @@ define(function(require) {
       var self = this;
 
       this.model.bind(
-        'favouriteadded favouriteremoved',
+        'favourite:added favourite:removed',
         this.render, this
       );
 
