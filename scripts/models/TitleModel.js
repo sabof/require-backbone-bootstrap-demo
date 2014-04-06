@@ -52,7 +52,6 @@ define(function(require) {
       var self = this;
       var sessionId = this.appModel.currentSession.get('sessionId');
 
-      // FIXME: Deletes the model?
       return BaseModel.prototype.sync(
         'delete', this, {
           contentType: 'application/json',

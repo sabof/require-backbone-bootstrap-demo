@@ -6,12 +6,6 @@ define(function(require) {
     initialize: function() {
       var self = this;
 
-      // // FIXME: Needed?
-      // this.model.on("change", function() {
-      //   // FIXME: Set cookie?
-      //   self.setMessages([]);
-      // });
-
       // FIXME: Change 'message' to 'notification'
       this.model.on('message', function(model, messages) {
         // FIXME: Set cookie?

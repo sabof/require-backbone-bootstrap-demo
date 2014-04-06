@@ -40,7 +40,6 @@ define(function(require) {
 
       this.appModel.currentSession.on(
         'signout', function() {
-          console.log('clearingUser');
           self.clear().set(self.defaults);
         }
       );
@@ -64,7 +63,6 @@ define(function(require) {
           },
 
           error: function(model, error) {
-            // debugger;
             var messages = [{
               type: 'error',
               message: self.extactServerError(error)
@@ -177,7 +175,7 @@ define(function(require) {
       if (options.forceMethod) {
         method = options.forceMethod;
       }
-      return Backbone.sync(method, model, options);
+      return BaseModel.prototype.sync(method, model, options);
     }
 
   });

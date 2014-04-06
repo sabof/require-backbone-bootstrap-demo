@@ -109,7 +109,6 @@ require([
 
 // Nice to have
 
-// FIXME: Better validation rules
 // FIXME: Support chrome's auto-fill
 // FIXME: Show username when signedIn?
 // FIXME: Namespace events
@@ -128,6 +127,7 @@ require([
 
 // Fixed
 
+// FIXED: Better validation rules
 // FIXED: Add favourite immediately
 // FIXED: Change messages to <ul>
 // FIXED: Style lists
