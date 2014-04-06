@@ -101,9 +101,11 @@ require([
 
   Backbone.history.start();
 
-  window.appModel.currentSession.signIn(
-    { username: 'testuser1', password: 'password'}
-  );
+  if (window.location.origin === "http://virser") {
+    window.appModel.currentSession.signIn(
+      { username: 'testuser1', password: 'password'}
+    );
+  }
 
 });
 
