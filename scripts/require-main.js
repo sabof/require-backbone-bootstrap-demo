@@ -92,36 +92,52 @@ require([
     { username: 'testuser1', password: 'password'}
   );
 
+  // FIXME: Move to a separate file
+  // FIXME: Combine with AppModel?
 
   // Router
   var AppRouter = Backbone.Router.extend({
-
-    routes:{
-      "":"list",
-      "view-titles":"viewTitles"
+    initialize: function() {
+      this.route(/(.*)/, 'mainRoute');
     },
 
-    list: function () {
-      console.log('list ran');
-      // $('a[href=#page-view-titles]').tab('show');
-      // $('#page-view-titles').tab('show');
-      // this.wineList = new WineCollection();
-      // this.wineListView = new WineListView({model:this.wineList});
-      // this.wineList.fetch();
-      // $('#sidebar').html(this.wineListView.render().el);
+    mainRoute: function(name) {
+      // console.log('route', name);
+      var allowed = this.allowedPages();
+      if (allowed.indexOf(name) === -1) {
+        name = this.defaultPage();
+      }
+      $('a[href=#' + name + ']').tab('show');
     },
 
-    viewTitles: function (id) {
-      $('a[href=#page-view-titles]').tab('show');
-      // this.wine = this.wineList.get(id);
-      // if (appModel.wineView) appModel.wineView.close();
-      // this.wineView = new WineView({model:this.wine});
-      // $('#content').html(this.wineView.render().el);
-    }
+    currentPage: function() {
+      return $('#pages .tab-pane.active').prop('id');
+    },
+
+    allowedPages: function() {
+      if (this.appModel.currentSession.isSignedIn()) {
+        return [
+          'page-view-titles',
+          'page-user-details'
+        ];
+      } else {
+        return [
+          'page-signin',
+          'page-view-titles',
+          'page-register',
+        ];
+      }
+    },
+
+    defaultPage: function() {
+      return this.allowedPages()[0];
+    },
 
   });
 
-  var app = new AppRouter();
+  var router = new AppRouter();
+  router.appModel = appModel;
+
   Backbone.history.start();
 
 });
