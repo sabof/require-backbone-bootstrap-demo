@@ -75,7 +75,7 @@
     "supernew"      : false,    // Tolerate `new function () { ... };` and `new Object;`.
     "validthis"     : false,    // Tolerate strict violations when the code is running in strict mode and you use this in a non-constructor function.
 
-    "globals": { "define": true },
+    "globals": { "define": true, "$": true },
 
     // == Environments ====================================================
     //

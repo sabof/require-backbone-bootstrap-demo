@@ -19,22 +19,29 @@ require.config({
   }
 });
 
+require(['jquery'], function($) {
+  window.$ = $;
+  require(['bootstrap/js/bootstrap.js']);
+});
+
 require([
+  'jquery',
   'models/AppModel',
   'views/WrapperView',
   'views/AvailableTitlesView',
-  'jquery',
   'pages/RegisterPage',
   'pages/SignInPage',
-  'pages/EditUserDetailsPage'
+  'pages/EditUserDetailsPage',
+  'backbone',
 ], function(
+  $,
   AppModel,
   WrapperView,
   AvailableTitlesView,
-  $,
   RegisterPage,
   SignInPage,
-  EditUserDetailsPage
+  EditUserDetailsPage,
+  Backbone
 ) {
   // require(['test'], function() {});
 
@@ -75,51 +82,50 @@ require([
   });
 
   window.appModel.currentSession.signIn(
-    { username: 'c', password: 'c'}
+    { username: 'testuser1', password: 'password'}
   );
 
+
+  // Router
+  var AppRouter = Backbone.Router.extend({
+
+    routes:{
+      "":"list",
+      "view-titles":"wineDetails"
+    },
+
+    list: function () {
+      $('#page-view-titles').tab('show');
+      // this.wineList = new WineCollection();
+      // this.wineListView = new WineListView({model:this.wineList});
+      // this.wineList.fetch();
+      // $('#sidebar').html(this.wineListView.render().el);
+    },
+
+    viewTitles: function (id) {
+      this.wine = this.wineList.get(id);
+      if (appModel.wineView) appModel.wineView.close();
+      this.wineView = new WineView({model:this.wine});
+      $('#content').html(this.wineView.render().el);
+    }
+
+  });
+
 });
-
-// // Router
-// var AppRouter = Backbone.Router.extend({
-
-//     routes:{
-//         "":"list",
-//         "wines/:id":"wineDetails"
-//     },
-
-//     initialize:function () {
-//         $('#header').html(new HeaderView().render().el);
-//     },
-
-//     list:function () {
-//         this.wineList = new WineCollection();
-//         this.wineListView = new WineListView({model:this.wineList});
-//         this.wineList.fetch();
-//         $('#sidebar').html(this.wineListView.render().el);
-//     },
-
-//     wineDetails:function (id) {
-//         this.wine = this.wineList.get(id);
-//         if (appModel.wineView) appModel.wineView.close();
-//         this.wineView = new WineView({model:this.wine});
-//         $('#content').html(this.wineView.render().el);
-//     }
-
-// });
 
 // FIXME: Add "Success" messages;
 // FIXME: Show username when signedIn?
 // FIXME: Consistency: prefer events when possible
 // FIXME: Add sorting
 // FIXME: Add submit to "profile-edit"
-// FIXME: Sign-in on registration
 // FIXME: Join sing-in and register pages
 // FIXME: Namespace events
 // FIXME: Style lists
 // FIXME: Change page on sign in/out
 // FIXME: Create page for the titles
+// FIXME: Add routing
 
+// FIXED: Sign-in on registration
 // FIXED: Hide menu intially
 // FIXED: Add sign-out
 // FIXED: Make tabbar sections dynamic

@@ -24,10 +24,14 @@ define(function(require) {
     },
 
     register: function(attrs) {
+      var self = this;
       return this.save(
         attrs, {
           url: this.appModel.url() + 'register/' + attrs.username,
-          forceMethod: 'update'
+          forceMethod: 'update',
+          success: function() {
+            self.appModel.currentSession.signIn(attrs);
+          }
         });
     },
 
@@ -121,15 +125,14 @@ define(function(require) {
 
     },
 
-      initialize: function() {
-        var self = this;
-
-        this.appModel.currentSession.on(
-          'change:userId', function() {
-            self.getUserDetails();
-          }
-        );
-      },
+    initialize: function() {
+      var self = this;
+      this.appModel.currentSession.on(
+        'change:userId', function() {
+          self.getUserDetails();
+        }
+      );
+    },
 
     // FIXME: Move to base class?
     sync: function(method, model, options) {
@@ -139,5 +142,5 @@ define(function(require) {
       return Backbone.sync(method, model, options);
     }
 
-    });
+  });
 });
