@@ -9,8 +9,22 @@ define(function(require) {
       return root + '/titles';
     },
 
+    getTwin: function(model) {
+      return this.appModel.availableTitles.getModelById(
+        model.get('id')
+      );
+    },
+
     initialize: function() {
       var self = this;
+
+      this.on('remove', function(model) {
+        this.getTwin(model).trigger('favouriteremoved');
+      });
+
+      this.on('add', function(model) {
+        this.getTwin(model).trigger('favouriteadded');
+      });
 
       // FIXME: Do I need this?
       this.appModel.currentSession.on(
@@ -18,16 +32,9 @@ define(function(require) {
           if (value) {
             self.getTitles();
           } else {
-            var models = self.map(function(model) {
-              return self.appModel.availableTitles.getModelById(
-                model.get('id')
-              );
-            });
-
+            var models = self.map(self.getTwin, self);
             self.reset([]);
-
             _.invoke(models, 'trigger', 'favouriteremoved');
-
           }
         }
       );
@@ -38,13 +45,7 @@ define(function(require) {
 
       var sessionId = this.appModel.currentSession.get('sessionId');
       return this.fetch({
-        headers: { sessionId: sessionId },
-        success: function() {
-          // FIXME: Move to Titles
-          var favouriteIds = self.models.map(function(it) {
-            return it.get('id');
-          });
-        }
+        headers: { sessionId: sessionId }
       });
     },
 

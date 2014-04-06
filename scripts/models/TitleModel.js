@@ -2,24 +2,6 @@ define(function(require) {
   var BaseModel = require('models/BaseModel');
 
   return BaseModel.extend({
-    initialize: function() {
-      var self = this;
-
-      // FIXME: Can be optimized
-      this.appModel.favouriteTitles.on('add', function(model) {
-          if (model.isEqual(self)) {
-            self.trigger('favouriteadded');
-          }
-        });
-
-      this.appModel.favouriteTitles.on('remove', function(model) {
-          if (model.isEqual(self)) {
-            self.trigger('favouriteremoved');
-          }
-        });
-
-    },
-
     url: function() {
       // FIXME: Do I need the full URL?
       // FIXME: How do full urls relate to urlRoot?
