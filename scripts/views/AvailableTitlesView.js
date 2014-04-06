@@ -23,11 +23,11 @@ define(function(require) {
       // FIXME: Change to add?
 
       this.model.bind("sync", this.render, this);
-      this.model.appModel.currentSession.bind('signedin', function() {
+      this.model.appModel.currentSession.bind('signin', function() {
         self.$el.addClass('show-favourites');
       });
 
-      this.model.appModel.currentSession.bind('signedout', function() {
+      this.model.appModel.currentSession.bind('signout', function() {
         self.$el.removeClass('show-favourites');
       });
 

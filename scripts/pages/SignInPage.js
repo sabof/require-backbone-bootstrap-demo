@@ -15,18 +15,6 @@ define(function(require) {
       // this.model.fetch(false, {url: );
     },
 
-    initialize: function() {
-      var self = this;
-
-      // FIXME: Move to base class?
-
-      this.model.on("change", function() {
-        // FIXME: Set cookie?
-        self.$el.find('.error-message').html('');
-      });
-
-    },
-
     events: {
       'click .submit' : 'submitOnClick'
     }

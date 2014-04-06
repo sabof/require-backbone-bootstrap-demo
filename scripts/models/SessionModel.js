@@ -3,17 +3,39 @@ define(function(require) {
   var $ = require('jquery');
 
   return BaseModel.extend({
+    defaults: function() {
+      return {
+        sessionId: null,
+        userId: null,
+        expiryTime: null
+      };
+    },
+
     signIn: function(attrs, options) {
       var self = this;
+      var errors = [];
+
+      this.on('change', this.trigger.bind(this, 'message', this, []));
 
       if (! attrs.username) {
-        this.trigger('invalid', this, 'Username is invalid');
-        return;
+        errors.push({
+          type: 'error',
+          property: 'username',
+          message: 'Username is invalid'
+        });
       }
 
       if (! attrs.password) {
-        this.trigger('invalid', this, 'Password is invalid');
-        return;
+        errors.push({
+          type: 'error',
+          property: 'password',
+          message:  'Password is invalid'
+        });
+      }
+
+      if (errors.length) {
+        this.trigger('invalid message', this, errors);
+        return errors;
       }
 
       options = $.extend({}, options, {
@@ -22,31 +44,36 @@ define(function(require) {
           attrs.password,
 
         success: function() {
-          self.trigger('signedin');
+          var messages = [{
+            type: 'success',
+            message: 'Logged in'
+          }];
+
+          self.trigger('signin message', self, messages);
+        },
+
+        error: function(model, error) {
+          var messages = [{
+            type: 'error',
+            message: (new Function('return ' + error.responseText))().msg
+          }];
+
+          self.trigger('signin message', self, messages);
         }
+
       });
 
       return this.fetch(options);
     },
 
     signOut: function() {
-      // FIXME: Implement me
-      // var self = this;
-
       this.clear().set(this.defaults);
-      this.trigger('signedout');
+      this.trigger('signout');
     },
 
     isSignedIn: function() {
       return this.get('sessionId');
-    },
-
-    defaults: function() {
-      return {
-        sessionId: null,
-        userId: null,
-        expiryTime: null
-      };
     }
+
   });
 });

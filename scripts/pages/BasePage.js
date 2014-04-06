@@ -3,22 +3,45 @@ define(function(require) {
   var _ = require('underscore');
 
   return BaseView.extend({
+    initialize: function() {
+      var self = this;
+
+      // // FIXME: Needed?
+      // this.model.on("change", function() {
+      //   // FIXME: Set cookie?
+      //   self.setMessages([]);
+      // });
+
+      // FIXME: Change 'message' to 'notification'
+      this.model.on('message', function(model, messages) {
+        // FIXME: Set cookie?
+        console.log('tried to set message', arguments);
+        if (messages) {
+          self.setMessages(messages);
+        }
+      });
+    },
+
     setMessages: function(messages) {
       messages = _.groupBy(messages, 'type');
       var text = '';
+      var $error = this.$el.find('.error-messages');
+      var $success = this.$el.find('.success-messages');
 
       if (messages.error) {
-        text = _.pluck(messages.error, 'message');
-        this.$el.find('.error-message').show().html(text);
+        text = _.pluck(messages.error, 'message')
+          .join('<br/>');
+        $error.show().html(text);
       } else {
-        this.$el.find('.error-message').hide();
+        $error.hide();
       }
 
       if (messages.success) {
-        text = _.pluck(messages.success, 'message');
-        this.$el.find('.success-message').show().html(text);
+        text = _.pluck(messages.success, 'message')
+          .join('<br/>');
+        $success.show().html(text);
       } else {
-        this.$el.find('.success-message').hide();
+        $success.hide();
       }
     }
   });

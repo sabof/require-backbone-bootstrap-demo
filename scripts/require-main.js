@@ -96,7 +96,7 @@ require([
     initialize: function() {
       var self = this;
       this.route(/(.*)/, 'mainRoute');
-      this.appModel.currentSession.on('signedin signedout', function() {
+      this.appModel.currentSession.on('signin signout', function() {
         self.normalizePage();
       });
     },
@@ -164,6 +164,7 @@ require([
 // FIXME: Change "singedin" to "signin"
 // FIXME: How much do TitleModels need to know about the collections?
 // FIXME: Add favourite immediately
+// FIXME: Set cookie upon logging-in?
 
 // FIXED: Add submit to "profile-edit"
 // FIXED: Change page on sign in/out

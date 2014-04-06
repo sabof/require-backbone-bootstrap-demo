@@ -6,7 +6,7 @@ define(function(require) {
       var self = this;
 
       this.model.currentSession.bind(
-        'signedin signedout',
+        'signin signout',
         this.render, this
       );
 

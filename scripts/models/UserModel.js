@@ -69,7 +69,6 @@ define(function(require) {
       var sessionId = this.appModel.currentSession.get('sessionId');
 
       if (! (this.appModel.currentSession.isSignedIn()) ) {
-        // FIXME: Trigger error event
         return;
       }
 
@@ -83,8 +82,8 @@ define(function(require) {
     },
 
     validate: function(attrs) {
-      // FIXME: return a {property, message} object
       var errors = [];
+
       if ( ! attrs.username ) {
         errors.push({
           type: 'error',
@@ -92,12 +91,14 @@ define(function(require) {
           message: 'Username is invalid'
         });
       }
+
       if ( ! attrs.firstName ) {
         errors.push({
           type: 'error',
           message: 'First name is invalid'
         });
       }
+
       if ( ! attrs.lastName ) {
         errors.push({
           type: 'error',
@@ -105,6 +106,7 @@ define(function(require) {
           message: 'Last name is invalid'
         });
       }
+
       if ( ! attrs.password ) {
         errors.push({
           type: 'error',
@@ -112,6 +114,7 @@ define(function(require) {
           message:  'Password is invalid'
         });
       }
+
       if ( ! attrs.phoneNumber ) {
         errors.push({
           type: 'error',
@@ -119,10 +122,10 @@ define(function(require) {
           message: 'Phone number is invalid'
         });
       }
+
       if (errors.length) {
         return errors;
       }
-
     },
 
     initialize: function() {
