@@ -3,9 +3,21 @@ define(function(require) {
   var $ = require('jquery');
 
   return BasePage.extend({
+    propertyToIdMap: {
+      'username': 'register-username',
+      'password': 'register-password',
+      'lastName': 'register-last-name',
+      'firstName': 'register-first-name',
+      'phoneNumber': 'register-phone-number',
+    },
+
     initialize: function() {
       var self = this;
       BasePage.prototype.initialize.call(this);
+
+      this.model.on('registration:successful', function() {
+        self.clearForm();
+      });
     },
 
     events: {
@@ -15,13 +27,9 @@ define(function(require) {
     submitOnClick: function(e) {
       e.preventDefault();
 
-      this.model.register({
-        username: $('#register-username').val(),
-        firstName: $('#register-first-name').val(),
-        lastName: $('#register-last-name').val(),
-        password: $('#register-password').val(),
-        phoneNumber: $('#register-phone-number').val()
-      });
+      this.model.register(
+        this.getValues()
+      );
     }
 
   });

@@ -57,12 +57,7 @@ define(function(require) {
     submitOnClick: function(e) {
       e.preventDefault();
 
-      var map = $.extend({}, this.propertyToIdMap);
-      Object.keys(map).forEach(function(property) {
-        var id = map[property];
-        map[property] = document.getElementById(id).value;
-      });
-
+      var map = this.getValues();
       map.genderIsFemale = $('input[name=user-details-sex]:checked').val() === 'female';
       map.age = Number(map.age) || 0;
 

@@ -3,16 +3,20 @@ define(function(require) {
   var $ = require('jquery');
 
   return BasePage.extend({
+    propertyToIdMap: {
+      'username': 'signin-username',
+      'password': 'signin-password'
+    },
+
     submitOnClick: function(e) {
       e.preventDefault();
+      var self = this;
 
-      this.model.signIn({
-        username: $('#signin-username').val(),
-        password: $('#signin-password').val()
+      this.model.signIn(this.getValues());
+
+      this.model.on('signin', function() {
+        self.clearForm();
       });
-
-      // var user = this.appModel.currentUser;
-      // this.model.fetch(false, {url: );
     },
 
     events: {

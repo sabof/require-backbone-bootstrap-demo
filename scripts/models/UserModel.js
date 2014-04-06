@@ -58,6 +58,7 @@ define(function(require) {
               message: "The registration was successful"
             }];
             self.trigger('message', self, messages);
+            self.trigger('registration:successful');
 
             self.appModel.currentSession.signIn(attrs);
           },

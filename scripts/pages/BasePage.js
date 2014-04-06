@@ -3,6 +3,8 @@ define(function(require) {
   var _ = require('underscore');
 
   return BaseView.extend({
+    propertyToIdMap: [],
+
     initialize: function() {
       var self = this;
 
@@ -20,13 +22,32 @@ define(function(require) {
 
     },
 
+    clearForm: function() {
+      var map = this.propertyToIdMap;
+      Object.keys(map).forEach(function(prop) {
+        var id = map[prop];
+        document.getElementById(id).value = '';
+      });
+      return map;
+    },
+
+    getValues: function() {
+      var map = $.extend({}, this.propertyToIdMap);
+      Object.keys(map).forEach(function(property) {
+        var id = map[property];
+        map[property] = document.getElementById(id).value;
+      });
+      return map;
+    },
+
     setMessages: function(messages) {
       messages = _.groupBy(messages, 'type');
       var text = '';
       var $error = this.$el.find('.error-messages');
       var $success = this.$el.find('.success-messages');
 
-      this.$el.find('.error-messages, .success-messages')
+      this.$el
+        .find('.error-messages, .success-messages')
         .empty();
 
       if (messages.error) {
