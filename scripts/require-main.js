@@ -113,7 +113,6 @@ require([
 // FIXME: Support chrome's auto-fill
 // FIXME: Show username when signedIn?
 // FIXME: Namespace events
-// FIXME: Add favourite immediately
 // FIXME: Set cookie upon logging-in?
 // FIXME: Set .error style on incorrect inputs
 
@@ -129,6 +128,7 @@ require([
 
 // Fixed
 
+// FIXED: Add favourite immediately
 // FIXED: Change messages to <ul>
 // FIXED: Style lists
 // FIXED: Fix input types
