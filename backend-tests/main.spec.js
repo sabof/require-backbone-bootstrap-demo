@@ -5,12 +5,7 @@ var framework = require("../backend/framework.js");
 require("../backend/handlers.js");
 
 //------------------------------------------------------------------------------
-var mockRes = new testUtils.MockRes();
 
-framework.mainHandler({
-  url: '/IDontExist',
-  method: 'GET'
-}, mockRes);
 //------------------------------------------------------------------------------
 
 try {
@@ -35,16 +30,39 @@ describe('/gametitles/list', function() {
   });
 });
 
-describe('404', function() {
-  it('should be shown when a path doen\'t match an API handler or a file', function() {
-    var mockRes = new testUtils.MockRes();
+//------------------------------------------------------------------------------
 
+describe('404', function() {
+  it('should be shown when a path doen\'t match an API handler or a file', function(done) {
+    var mockRes = new testUtils.MockRes();
     framework.mainHandler({
       url: '/IDontExist',
       method: 'GET'
     }, mockRes);
 
-    expect(mockRes.getBody()).toBeTruthy();
-    expect(mockRes.getBody().match("404")).toBeTruthy();
+    setTimeout(function() {
+      expect(mockRes.getBody().match("404 Not Found")).toBeTruthy();
+      done();
+    }, 500);
+
+  });
+});
+
+//------------------------------------------------------------------------------
+
+describe('file server', function() {
+  it('should serve index.html', function(done) {
+    var mockRes = new testUtils.MockRes();
+
+    framework.mainHandler({
+      url: '/index.html',
+      method: 'GET'
+    }, mockRes);
+
+    setTimeout(function() {
+      expect(mockRes.getBody().match("<html ")).toBeTruthy();
+      done();
+    }, 500);
+
   });
 });

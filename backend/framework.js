@@ -31,6 +31,7 @@ function serveError(res, code) {
       : code
   ) + "\n";
 
+  console.log(body);
 	res.end(body);
 }
 
@@ -44,12 +45,13 @@ function fileNameToMimeType(filename) {
 }
 
 function handleFileRequest(req, res) {
-  var uri = url.parse(req.url).pathname,
-      filename = path.join(process.cwd(), 'frontend', uri);
+  var uri = url.parse(req.url).pathname;
+  var root = path.dirname(__dirname);
+  var filename = path.join(root, 'frontend', uri);
 
   fs.exists(filename, function(exists) {
     if (!exists) {
-      serveError(404, res);
+      serveError(res, 404);
       return;
     }
 
@@ -57,7 +59,7 @@ function handleFileRequest(req, res) {
 
     fs.readFile(filename, "binary", function(err, file) {
       if (err) {
-        serveError(500, res);
+        serveError(res, 500);
         return;
       }
 

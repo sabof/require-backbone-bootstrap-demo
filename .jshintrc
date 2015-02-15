@@ -78,6 +78,8 @@
   "globals": {
     "define": true,
     "describe": true,
+    "runs": true,
+    "waitsFor": true,
     "it": true,
     "expect": true,
     "$": true

@@ -7,7 +7,7 @@ define(function(require) {
 
   return BaseModel.extend({
     url: function() {
-      return 'http://217.18.25.29:10070/';
+      return '/';
     },
 
     registerPage: function(id, page) {
