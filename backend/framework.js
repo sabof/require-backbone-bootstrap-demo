@@ -14,7 +14,7 @@ function serveJSON(res, object) {
   res.end(JSON.stringify(object));
 }
 
-function serveError(res, code) {
+function serveError(res, code, additionalInfo) {
   var names = {
     403 : "Not Authenticated",
 	  404 : "Not Found",
@@ -28,8 +28,10 @@ function serveError(res, code) {
   var body = (
     names[code]
       ? code + ' ' + names[code]
-      : code
-  ) + "\n";
+      : code)
+        + "\n"
+        + (additionalInfo + "\n" || "")
+  ;
 
   console.log(body);
 	res.end(body);
