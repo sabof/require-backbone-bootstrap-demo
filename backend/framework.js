@@ -4,6 +4,7 @@ var path = require("path");
 var url = require("url");
 var fs = require('fs');
 
+var SESSION_TIMEOUT = 15;
 var requestHandlers = [];
 
 function serveJSON(res, object) {
@@ -13,11 +14,24 @@ function serveJSON(res, object) {
   res.end(JSON.stringify(object));
 }
 
-function serve404(res) {
-  res.writeHead(404, {
+function serveError(res, code) {
+  var names = {
+    403 : "Not Authenticated",
+	  404 : "Not Found",
+	  500 : "Internal Server Error"
+  };
+
+  res.writeHead(code, {
 		"Content-Type": "text/plain"
 	});
-	res.end("404 Not Found\n");
+
+  var body = (
+    names[code]
+      ? code + ' ' + names[code]
+      : code
+  ) + "\n";
+
+	res.end(body);
 }
 
 function fileNameToMimeType(filename) {
@@ -35,7 +49,7 @@ function handleFileRequest(req, res) {
 
   fs.exists(filename, function(exists) {
     if (!exists) {
-      serve404(res);
+      serveError(404, res);
       return;
     }
 
@@ -43,9 +57,7 @@ function handleFileRequest(req, res) {
 
     fs.readFile(filename, "binary", function(err, file) {
       if (err) {
-        res.writeHead(500, {"Content-Type": "text/plain"});
-        res.write(err + "\n");
-        res.end();
+        serveError(500, res);
         return;
       }
 
@@ -57,14 +69,13 @@ function handleFileRequest(req, res) {
 }
 
 function registerHandler(method, matcher, func) {
-  // Adding to the beginning so that in case of an overlap recent additions get
+  func.method = method;
+  func.matcher = matcher;
+
+  // Adding to the beginning, so that in case of an overlap recent additions get
   // precedence
 
-  requestHandlers.unshift({
-    method: method,
-    matcher: matcher,
-    func: func
-  });
+  requestHandlers.unshift(func);
 }
 
 function mainHandler(req, res) {
@@ -75,11 +86,11 @@ function mainHandler(req, res) {
   requestHandlers.some(function(handler) {
     if (
       handler.method === method
-        && handler.matcher.test(url)
+        && new RegExp(handler.matcher).test(url)
     ) {
       requestHandler = handler;
+      return true;
     }
-    return true;
   });
 
   if (requestHandler) {
@@ -91,3 +102,4 @@ function mainHandler(req, res) {
 
 exports.registerHandler = registerHandler;
 exports.serveJSON = serveJSON;
+exports.mainHandler = mainHandler;

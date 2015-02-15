@@ -60,3 +60,4 @@ exports.gameTitles = [
 ];
 
 exports.users = [];
+exports.sessions = [];

@@ -1,5 +1,4 @@
 /*jshint node:true */
-/*global unescape */
 
 var http = require('http');
 var path = require("path");
