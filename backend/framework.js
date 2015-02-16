@@ -33,7 +33,6 @@ function serveError(res, code, additionalInfo) {
         + (additionalInfo + "\n" || "")
   ;
 
-  console.log(body);
 	res.end(body);
 }
 

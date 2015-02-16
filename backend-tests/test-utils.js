@@ -2,13 +2,13 @@
 
 function MockRes() {
   var body = "";
-  var head = null;
-  var status = 0;
+  var headers = null;
+  var statusCode = 0;
 
   return {
-    writeHead: function(statusCode, params) {
-      status = statusCode;
-      head = params;
+    writeHead: function(statusCode2, headers2) {
+      statusCode = statusCode2;
+      headers = headers2;
     },
     write: function(string) {
       body += string;
@@ -20,10 +20,10 @@ function MockRes() {
       return body;
     },
     getStatus: function() {
-      return status;
+      return statusCode;
     },
     getHead: function() {
-      return head;
+      return headers;
     }
   };
 }

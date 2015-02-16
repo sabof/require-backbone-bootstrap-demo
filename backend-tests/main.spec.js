@@ -66,3 +66,14 @@ describe('file server', function() {
 
   });
 });
+
+//------------------------------------------------------------------------------
+
+describe('PUT /register/{username}', function() {
+  var mockRes = new testUtils.MockRes();
+
+  framework.mainHandler({
+    url: '/gametitles/list',
+    method: 'PUT'
+  }, mockRes);
+});

@@ -13,4 +13,9 @@ framework.registerHandler("GET", "/profile/\\d+/titles", function(req, res) {});
 framework.registerHandler("GET", "/profile/\\d+", function(req, res) {});
 framework.registerHandler("PUT", "/profile/\\d+", function(req, res) {});
 framework.registerHandler("GET", "/signin/{username}/{password}", function(req, res) {});
-// PUT : /register/{username}
+framework.registerHandler("PUT", "/register/.+", function(req, res) {
+  console.log('register');
+  console.log(req.trailers);
+  console.log(req.body);
+  res.end();
+});
