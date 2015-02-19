@@ -1,16 +1,22 @@
 /*jshint node:true */
 
-var http = require('http');
-var path = require("path");
-var url = require("url");
-
 var express = require('express');
-var app = express();
+var path = require('path');
+var bodyParser = require('body-parser');
 
+var app = require('./app.js');
 var framework = require("./framework.js");
+
 require("./handlers.js");
+// app.use(express.bodyParser());
 
-var server = http.createServer(framework.mainHandler);
-var port = Number(process.env.PORT || 8124);
+console.log(process.env);
+app.use(express.static(path.join(__dirname, '../frontend/')));
+// Not sure if works
+// app.use(bodyParser.json());
 
-server.listen(port);
+var server = app.listen(process.env.PORT || 8124, 'localhost', function () {
+  var host = server.address().address;
+  var port = server.address().port;
+  console.log('Example app listening at http://%s:%s', host, port);
+});
