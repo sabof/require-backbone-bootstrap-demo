@@ -12,8 +12,8 @@ app.get("/gametitles/list", function(req, res) {
 });
 
 app.put('/register/:tagId', jsonParser, function(req, res) {
+  // req.param("tagId")
   res.json(req.body);
-  // res.json({something: 1});
 });
 
 framework.registerHandler("GET", "/profile/\\d+/titles", function(req, res) {});

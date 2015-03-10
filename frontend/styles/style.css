@@ -3,7 +3,7 @@
 }
 
 html {
-       overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 .container {
@@ -22,7 +22,8 @@ html {
 	background-color: #fdf7f7;
 }
 
-.success-messages, .error-messages {
+.success-messages,
+.error-messages {
 	padding: 5px;
 	margin-bottom: 10px;
 	border-radius: 4px;
